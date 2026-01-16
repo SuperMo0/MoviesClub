@@ -15,6 +15,8 @@ router.use(protect)
 
 router.post('/like/postId', controller.likePost)
 
+router.delete('/like/postId', controller.deleteLikePost)
+
 router.post('/comment/postId', controller.commentPost)
 
 router.post('/post', multer().single("image"), controller.createPost)

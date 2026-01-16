@@ -49,7 +49,6 @@ export async function getUserPosts(req, res, next) {
 }
 
 export async function likePost() {
-
     try {
         let postId = req?.params?.postId;
         let userId = req.userId;
@@ -74,6 +73,37 @@ export async function likePost() {
         next(error)
     }
 }
+
+
+export async function deleteLikePost() {
+    try {
+        let postId = req?.params?.postId;
+        let userId = req.userId;
+        if (!postId) return res.status(400).json({ message: 'bad request' });
+        let result = await prisma.post.update({
+            data: {
+                likedBy: {
+                    delete: {
+                        id: userId
+                    }
+                }
+            },
+            select: {
+                _count: { select: { likedBy: true } }
+            }
+        })
+
+        res.status(201).json({ message: "done", count: result._count.likedBy })
+
+    } catch (error) {
+        console.log(error);
+        next(error)
+    }
+}
+
+
+
+
 
 
 export async function commentPost(req, res, next) {
