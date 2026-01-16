@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model user {
+  id         String    @id @default(dbgenerated("uuid_generate_v4"))
+  userName   String    @unique
+  name       String?
+  image      String?
+  posts      post[]
+  followedBy user[]    @relation("UserFollow")
+  following  user[]    @relation("UserFollow")
+  likedPosts post[]    @relation("user_like_post")
+  comments   comment[]
+  joinedAt   DateTime  @default(now())
+  watchList  movie[]   @relation("user_watch_list")
+}
+
+model post {
+  id        String    @id @default(dbgenerated("uuid_generate_v4"))
+  content   String?
+  author    user      @relation(fields: [authorId], references: [id])
+  authorId  String
+  likedBy   user[]    @relation("user_like_post")
+  postId    String?
+  comments  comment[]
+  movie     movie?    @relation(fields: [movieId], references: [id])
+  movieId   String?
+  createdAt DateTime  @default(now())
+
+  @@index([authorId, createdAt])
+  @@index([movieId, createdAt])
+}
+
+model movie {
+  id          String  @id @default(dbgenerated("uuid_generate_v4"))
+  title       String
+  description String?
+  image       String
+  genres      genre[] @relation("movie_genre")
+  posts       post[]
+  watchListBy user[]  @relation("user_watch_list")
+}
+
+model comment {
+  id        String   @id @default(dbgenerated("uuid_generate_v4"))
+  author    user     @relation(fields: [authorId], references: [id])
+  authorId  String
+  post      post?    @relation(fields: [postId], references: [id])
+  postId    String?
+  createdAt DateTime @default(now())
+
+  @@index([postId, createdAt])
+  @@index([authorId, createdAt])
+}
+
+model genre {
+  id     String  @id @default(dbgenerated("uuid_generate_v4"))
+  name   String
+  movies movie[] @relation("movie_genre")
+}
