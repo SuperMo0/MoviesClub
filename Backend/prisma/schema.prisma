@@ -8,7 +8,7 @@ datasource db {
 }
 
 model user {
-  id         String    @id @default(dbgenerated("uuid_generate_v4"))
+  id         String    @id @default("uuid()")
   userName   String    @unique
   name       String?
   image      String?
@@ -22,12 +22,11 @@ model user {
 }
 
 model post {
-  id        String    @id @default(dbgenerated("uuid_generate_v4"))
+  id        String    @id @default("uuid()")
   content   String?
-  author    user      @relation(fields: [authorId], references: [id])
+  author    user      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  String
   likedBy   user[]    @relation("user_like_post")
-  postId    String?
   comments  comment[]
   movie     movie?    @relation(fields: [movieId], references: [id])
   movieId   String?
@@ -38,7 +37,8 @@ model post {
 }
 
 model movie {
-  id          String  @id @default(dbgenerated("uuid_generate_v4"))
+  id          String  @id @default("uuid()")
+  sourceId    String  @unique
   title       String
   description String?
   image       String
@@ -48,8 +48,9 @@ model movie {
 }
 
 model comment {
-  id        String   @id @default(dbgenerated("uuid_generate_v4"))
-  author    user     @relation(fields: [authorId], references: [id])
+  id        String   @id @default("uuid()")
+  content   String
+  author    user     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  String
   post      post?    @relation(fields: [postId], references: [id])
   postId    String?
@@ -60,7 +61,7 @@ model comment {
 }
 
 model genre {
-  id     String  @id @default(dbgenerated("uuid_generate_v4"))
-  name   String
+  id     String  @id @default("uuid()")
+  name   String  @unique
   movies movie[] @relation("movie_genre")
 }
