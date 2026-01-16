@@ -1,4 +1,4 @@
-import { verify } from "../utils/jwt.js";
+import { verify } from "../lib/jwt.js";
 export default async function protect(req, res, next) {
     try {
         const { jwt } = req.cookies;
@@ -8,4 +8,4 @@ export default async function protect(req, res, next) {
     } catch (error) {
         return res.status(401).json({ message: "Unauthorized" })
     }
-} s
+} 

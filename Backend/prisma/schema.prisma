@@ -8,11 +8,12 @@ datasource db {
 }
 
 model user {
-  id         String    @id @default("uuid()")
+  id         String    @id @default(uuid())
   userName   String    @unique
   password   String
   name       String?
   image      String?
+  bio        String?
   posts      post[]
   followedBy user[]    @relation("UserFollow")
   following  user[]    @relation("UserFollow")
@@ -23,33 +24,35 @@ model user {
 }
 
 model post {
-  id        String    @id @default("uuid()")
+  id        String    @id @default(uuid())
   content   String?
+  image     String?
   author    user      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  String
   likedBy   user[]    @relation("user_like_post")
   comments  comment[]
-  movie     movie?    @relation(fields: [movieId], references: [id])
-  movieId   String?
   createdAt DateTime  @default(now())
+  movie     movie?    @relation(fields: [movieId], references: [id])
+  movieId   String
+  rating    Int?
 
   @@index([authorId, createdAt])
   @@index([movieId, createdAt])
 }
 
 model movie {
-  id          String  @id @default("uuid()")
+  id          String  @id @default(uuid())
   sourceId    String  @unique
   title       String
   description String?
   image       String
   genres      genre[] @relation("movie_genre")
-  posts       post[]
   watchListBy user[]  @relation("user_watch_list")
+  posts       post[]
 }
 
 model comment {
-  id        String   @id @default("uuid()")
+  id        String   @id @default(uuid())
   content   String
   author    user     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  String
@@ -62,7 +65,7 @@ model comment {
 }
 
 model genre {
-  id     String  @id @default("uuid()")
+  id     String  @id @default(uuid())
   name   String  @unique
   movies movie[] @relation("movie_genre")
 }
