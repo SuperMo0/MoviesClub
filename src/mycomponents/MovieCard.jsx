@@ -8,6 +8,7 @@ export default function MovieCard({ movie }) {
 
             <div className="aspect-2/3 w-full overflow-hidden">
                 <img
+                    fetchPriority='high'
                     src={movie.image}
                     alt={movie.title}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"

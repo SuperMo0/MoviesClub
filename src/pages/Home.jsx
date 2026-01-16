@@ -1,4 +1,5 @@
 import React from 'react'
+import Footer from '@/mycomponents/Footer'
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -17,7 +18,7 @@ export default function Home() {
             <Hero />
             <Qsearch />
             <ShowingNow />
-
+            <Footer />
         </>
 
     )
