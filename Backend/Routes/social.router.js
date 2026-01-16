@@ -1,0 +1,31 @@
+import { Router } from "express";
+import * as controller from '../controllers/social.controller.js'
+import protect from './../middlewares/protect.js'
+import multer from 'multer'
+
+const router = Router();
+
+
+
+router.get('/feed', controller.getFeed);
+
+router.get('/posts/:userId', controller.getUserPosts);
+
+router.use(protect)
+
+router.post('/like/postId', controller.likePost)
+
+router.post('/comment/postId', controller.commentPost)
+
+router.post('/post', multer().single("image"), controller.createPost)
+
+router.put('/profile', multer().single("image"), controller.updateProfile);
+
+
+
+
+
+
+export default router
+
+
