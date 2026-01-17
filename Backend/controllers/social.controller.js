@@ -17,6 +17,29 @@ export async function getFeed(req, res) {
         console.log(error);
         next(error);
     }
+}
+
+
+
+export async function getUsers(req, res) {
+
+    try {
+        let users = await prisma.user.findMany({
+            select: {
+                _count: { select: { following: true, followedBy: true } },
+                name: true,
+                username: true,
+                id: true,
+                bio: true,
+                image: true,
+                joinedAt: true
+            }
+        })
+        res.json({ users });
+    } catch (error) {
+        console.log(error);
+        next(error);
+    }
 
 
 }

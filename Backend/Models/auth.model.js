@@ -35,7 +35,7 @@ export async function insertUser(name, username, password) {
     }
 }
 
-export async function getUserByEmail(username) {
+export async function getUserByUsername(username) {
     try {
         const user = await prisma.user.findFirst({
             where: {
@@ -60,7 +60,7 @@ export async function getUserById(id) {
                 id: true,
                 name: true,
                 username: true,
-                avatar: true,
+                image: true,
             }
         })
         return user;

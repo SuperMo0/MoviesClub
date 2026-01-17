@@ -17,6 +17,8 @@ export async function login(req, res) {
         await compare(password, originalPassword)
 
     } catch (error) {
+        console.log(error);
+
         return res.status(401).json({ message: "wrong credentials" })
     }
 
@@ -58,10 +60,15 @@ export async function signup(req, res) {
 export async function check(req, res) {
     try {
         const { jwt } = req.cookies;
+
         let userId = await verify(jwt);
+
         let user = await model.getUserById(userId);
+
         return res.json({ user });
+
     } catch (error) {
+        console.log(error);
         return res.status(401).json({ message: "Unauthorized" })
     }
 }

@@ -3,7 +3,7 @@ import * as controller from '../controllers/movies.controller.js'
 
 const router = Router();
 
-router.get('/movies', controller.getTodayMovies);
+router.get('/', controller.getTodayMovies);
 
 
 export default router

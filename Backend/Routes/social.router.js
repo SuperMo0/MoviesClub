@@ -9,6 +9,8 @@ const router = Router();
 
 router.get('/feed', controller.getFeed);
 
+router.get('/users', controller.getUsers);
+
 router.get('/posts/:userId', controller.getUserPosts);
 
 router.use(protect)
