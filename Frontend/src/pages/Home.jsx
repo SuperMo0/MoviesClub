@@ -4,6 +4,7 @@ import Hero from '@/MoviesComponents/Hero'
 import Qsearch from '@/MoviesComponents/Qsearch'
 import ShowingNow from '@/MoviesComponents/ShowingNow'
 import MovieBookingModal from '@/MoviesComponents/MovieBookingModal'
+import Login from '@/SocialComponents/Login'
 
 export default function Home() {
     const [isModalOpen, setIsModalOpen] = useState(false);

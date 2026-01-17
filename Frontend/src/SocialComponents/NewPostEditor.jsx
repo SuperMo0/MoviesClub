@@ -1,14 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Image, Film, Send, Smile, Star, X } from 'lucide-react'
+import { useAuthStore } from '@/stores/auth.store';
+import { useLoginModal } from '@/App';
 
 export default function NewPostEditor() {
-    const [content, setContent] = useState('');
-    const [selectedMovie, setSelectedMovie] = useState(null);
-    const [rating, setRating] = useState(0); // 0 to 5
-    const [hoverRating, setHoverRating] = useState(0); // For hover effect
-    const [showMoviePicker, setShowMoviePicker] = useState(false); // Fix: Control visibility with state
 
-    // Close dropdown if clicking outside
+    const [content, setContent] = useState('');
+
+    const [selectedMovie, setSelectedMovie] = useState(null);
+
+    const [rating, setRating] = useState(0);
+
+    const [hoverRating, setHoverRating] = useState(0);
+
+    const [showMoviePicker, setShowMoviePicker] = useState(false);
+
+    const { authUser } = useAuthStore()
+
+    const setIsLoginModalOpen = useLoginModal();
+
+    // Close Movie Picker if clicking outside
     const pickerRef = useRef(null);
     useEffect(() => {
         function handleClickOutside(event) {
@@ -20,13 +31,23 @@ export default function NewPostEditor() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    function handlePostSubmit() {
+
+        if (!authUser) {
+            setIsLoginModalOpen(true);
+            return;
+        }
+        // Send Data to server and insert the post 
+
+    }
+
     const recentMovies = ["Dune: Part Two", "Inception", "The Batman", "Oppenheimer", "Poor Things"];
 
     return (
         <div className='bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-lg'>
             <div className='flex gap-4'>
                 <img
-                    src="https://i.pravatar.cc/150?u=my_user"
+                    src={authUser.image || "https://i.pravatar.cc/150?u=my_user"}
                     className='w-10 h-10 rounded-full bg-slate-800 object-cover'
                     alt="My Avatar"
                 />
@@ -36,10 +57,10 @@ export default function NewPostEditor() {
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                         placeholder="What did you watch today?"
-                        className='w-full bg-transparent text-white placeholder:text-slate-500 resize-none outline-none text-base min-h-[80px]'
+                        className='w-full bg-transparent text-white placeholder:text-slate-500 resize-none outline-none text-base min-h-20'
                     />
 
-                    {/* Selected Movie Pill & Rating */}
+                    {/* Selected Movie & Rating */}
                     {selectedMovie && (
                         <div className="flex flex-wrap items-center gap-4 bg-slate-950/50 p-3 rounded-lg border border-slate-800">
                             {/* Movie Name */}
@@ -63,8 +84,8 @@ export default function NewPostEditor() {
                                     >
                                         <Star
                                             className={`w-5 h-5 transition-colors ${star <= (hoverRating || rating)
-                                                    ? 'fill-yellow-500 text-yellow-500'
-                                                    : 'text-slate-600'
+                                                ? 'fill-yellow-500 text-yellow-500'
+                                                : 'text-slate-600'
                                                 }`}
                                         />
                                     </button>
@@ -90,7 +111,7 @@ export default function NewPostEditor() {
                                 <Image className='w-5 h-5' />
                             </button>
 
-                            {/* MOVIE SELECTOR (Fixed) */}
+                            {/* MOVIE SELECTOR */}
                             <div ref={pickerRef} className="relative">
                                 <button
                                     onClick={() => setShowMoviePicker(!showMoviePicker)}
@@ -100,7 +121,7 @@ export default function NewPostEditor() {
                                     <Film className='w-5 h-5' />
                                 </button>
 
-                                {/* Dropdown Menu (Now controlled by click state) */}
+                                {/* Dropdown Menu */}
                                 {showMoviePicker && (
                                     <div className="absolute top-full left-0 mt-2 w-56 bg-slate-950 border border-slate-800 rounded-lg shadow-xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-100">
                                         <div className="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-900/50">
@@ -128,7 +149,8 @@ export default function NewPostEditor() {
                             </button>
                         </div>
 
-                        <button className='bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-full font-medium flex items-center gap-2 transition-colors'>
+                        <button className='bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-full font-medium flex items-center gap-2 transition-colors'
+                            onClick={handlePostSubmit}>
                             Post <Send className='w-4 h-4' />
                         </button>
                     </div>

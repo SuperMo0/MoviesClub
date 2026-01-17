@@ -1,8 +1,19 @@
 import React, { useState } from 'react'
 import { Heart, MessageCircle, Share2, MoreHorizontal, CheckCircle2, Film, Star, Send } from 'lucide-react'
+import { useSocialStore } from '@/stores/social.store';
+import { useMoviesStore } from '@/stores/movies.store';
+import { useAuthStore } from '@/stores/auth.store';
 
-export default function Post({ post }) {
+export default function Post({ user, post }) {
+
+    // console.log(user, post);
+
+
     const [isLiked, setIsLiked] = useState(false);
+    const { users } = useSocialStore();
+    const { allMovies } = useMoviesStore();
+    const { authUser } = useAuthStore()
+
 
     // Helper to render star rating
     const renderStars = (rating) => {
@@ -14,6 +25,8 @@ export default function Post({ post }) {
         ));
     };
 
+    const movie = allMovies.get(post.movieId) || allMovies.get("2094918");
+
     return (
         <div className='bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition-colors shadow-sm'>
 
@@ -21,22 +34,21 @@ export default function Post({ post }) {
             <div className='flex justify-between items-start mb-3'>
                 <div className='flex gap-3'>
                     <img
-                        src={post.user.avatar}
+                        src={user.image}
                         className='w-10 h-10 rounded-full bg-slate-800 object-cover'
-                        alt={post.user.name}
+                        alt={user.name}
                     />
                     <div>
                         <div className='flex items-center gap-2'>
-                            <span className='font-bold text-white'>{post.user.name}</span>
-                            {post.user.isVerified && <CheckCircle2 className='w-3 h-3 text-blue-500' />}
+                            <span className='font-bold text-white'>{user.name}</span>
                             <span className='text-xs text-slate-500'>{post.timestamp}</span>
                         </div>
 
                         {/* Movie Tag */}
-                        {post.movieTitle && (
+                        {movie && (
                             <div className='flex items-center gap-2 mt-0.5 text-xs text-slate-400'>
                                 <span className='flex items-center gap-1 text-red-400 font-medium'>
-                                    <Film className='w-3 h-3' /> {post.movieTitle}
+                                    <Film className='w-3 h-3' /> {movie.title}
                                 </span>
                                 <div className='flex gap-0.5'>{renderStars(post.rating)}</div>
                             </div>
@@ -51,7 +63,7 @@ export default function Post({ post }) {
 
             {post.image && (
                 <div className='mb-4 rounded-xl overflow-hidden border border-slate-800'>
-                    <img src={post.image} className='w-full object-cover max-h-[400px]' alt="Post content" />
+                    <img src={post.image} className='w-full object-cover max-h-100' alt="Post content" />
                 </div>
             )}
 
@@ -64,7 +76,7 @@ export default function Post({ post }) {
                     <div className={`p-2 rounded-full group-hover:bg-pink-500/10 transition-colors`}>
                         <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
                     </div>
-                    <span>{post.likes + (isLiked ? 1 : 0)}</span>
+                    <span>{post._count.likedBy + (isLiked ? 1 : 0)}</span>
                 </button>
 
                 <button className='flex items-center gap-2 text-sm group hover:text-blue-400'>
@@ -90,16 +102,16 @@ export default function Post({ post }) {
                         {post.comments.map((comment) => (
                             <div key={comment.id} className='flex gap-3'>
                                 <img
-                                    src={comment.user.avatar}
+                                    src={users.get(comment.authorId).image}
                                     className='w-7 h-7 rounded-full border border-slate-800 shrink-0 object-cover'
                                     alt=""
                                 />
                                 <div className='flex-1'>
                                     <div className='bg-slate-800/50 rounded-2xl rounded-tl-none px-3 py-2 inline-block'>
                                         <div className='flex items-baseline gap-2'>
-                                            <span className='text-xs font-bold text-slate-200'>{comment.user.name}</span>
+                                            <span className='text-xs font-bold text-slate-200'>{users.get(comment.authorId).name}</span>
                                         </div>
-                                        <p className='text-xs text-slate-300 leading-snug mt-0.5'>{comment.text}</p>
+                                        <p className='text-xs text-slate-300 leading-snug mt-0.5'>{comment.content}</p>
                                     </div>
                                     <div className='flex gap-3 mt-1 ml-1 text-[10px] text-slate-500'>
                                         <button className='hover:text-slate-300'>Like</button>
@@ -114,7 +126,7 @@ export default function Post({ post }) {
                 {/* 2. Add Comment Input (Always Visible) */}
                 <div className='flex gap-3 items-center'>
                     <img
-                        src="https://i.pravatar.cc/150?u=my_user"
+                        src={authUser.image}
                         className='w-8 h-8 rounded-full border border-slate-700 bg-slate-800 object-cover'
                         alt="Me"
                     />

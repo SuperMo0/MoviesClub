@@ -2,9 +2,13 @@ import React, { useState } from 'react';
 import { Menu, X } from 'lucide-react'; // Make sure you have this installed
 import { Button } from "@/components/ui/button"; // Assuming standard shadcn path
 import { NavLink } from 'react-router';
+import { useAuthStore } from '@/stores/auth.store';
+import { cn } from '@/lib/utils';
 
-const Header = () => {
+const Header = ({ onLoginClick, onSignupClick }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    const { authUser } = useAuthStore();
 
     const navLinks = [
         { name: "Movies", href: "/" },
@@ -35,12 +39,19 @@ const Header = () => {
                 </nav>
 
                 <div className="hidden items-center gap-4 md:flex">
-                    <Button variant="ghost" className="">
+                    <Button className={cn(authUser && "hidden")} variant="ghost" onClick={onLoginClick}>
                         Login
                     </Button>
-                    <Button className="shadow-neon-red hover:shadow-neon-intense transition-all duration-300">
+                    <Button className={"shadow-neon-red hover:shadow-neon-intense transition-all duration-300 " + cn(authUser && "hidden")}
+                        onClick={onSignupClick}>
                         Signup
                     </Button>
+                    <NavLink className={cn(!authUser && "hidden")} to={`/social/user/${authUser?.username}`} state={{ id: authUser?.id }}  >
+                        <Button className="shadow-neon-red hover:shadow-neon-intense transition-all duration-300"
+                            onClick={onSignupClick}>
+                            My Profile
+                        </Button>
+                    </NavLink>
                 </div>
 
                 <button

@@ -1,6 +1,6 @@
 import React from 'react'
 import MovieCard from './MovieCard'
-import { movies } from '../movies.js'
+import movies from '../movies.js'
 import { Flame } from 'lucide-react'
 
 export default function ShowingNow({ handleMovieClick }) {

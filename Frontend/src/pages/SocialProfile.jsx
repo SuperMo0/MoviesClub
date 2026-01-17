@@ -1,21 +1,44 @@
-import { useAuth } from '@/SocialComponents/Providers/AuthProvider'
-import React from 'react'
+import React, { useEffect } from 'react'
 import Post from '@/SocialComponents/Post';
 import NewPostEditor from '@/SocialComponents/NewPostEditor';
 import { REVIEWS } from '@/socialData'
 import { MapPin, Calendar, Edit3, Link as LinkIcon, Users } from 'lucide-react'
+import { useAuthStore } from '@/stores/auth.store';
+import { useLocation, useParams } from 'react-router';
+import { useSocialStore } from '@/stores/social.store';
+import { useMoviesStore } from '@/stores/movies.store';
 
 export default function SocialProfile() {
-    const { user } = useAuth();
 
-    // Fallback if user data is loading or missing
-    if (!user) return <div className="text-white p-10 text-center">Loading profile...</div>;
+    const { authUser } = useAuthStore()
 
-    // Fake stats for design purposes
+    const { id } = useLocation().state  // there might be no Id if user came directly to the this Link
+
+    const { username } = useParams();
+
+    const { getPosts, getUsers, users, userPosts, isLoading } = useSocialStore();
+
+    const { allMovies, getAllMovies } = useMoviesStore();
+
+    useEffect(() => {
+        if (!users) getUsers();
+
+        if (!userPosts) getPosts();
+
+        if (!allMovies) getAllMovies();
+
+    }, [])
+
+
+    if (isLoading || !users || !userPosts || !allMovies) return <div className="text-white p-10 text-center">Loading profile...</div>;
+
+    const user = users.get(id);
+    const posts = userPosts.get(id);
+
     const stats = [
-        { label: 'Reviews', value: '42' },
-        { label: 'Followers', value: '1.2k' },
-        { label: 'Following', value: '340' },
+        { label: 'Reviews', value: posts.length },
+        { label: 'Followers', value: user._count.followedBy },
+        { label: 'Following', value: user._count.following },
     ];
 
     return (
@@ -24,15 +47,14 @@ export default function SocialProfile() {
             {/* --- HEADER SECTION --- */}
             <div className='relative mb-20 md:mb-24'>
 
-                {/* 1. Banner Image */}
                 <div className='h-48 md:h-64 w-full bg-slate-800 overflow-hidden relative'>
                     <img
                         className='w-full h-full object-cover opacity-80'
-                        src="https://wallpapercave.com/wp/wp10021077.jpg"
+                        src={"https://wallpapercave.com/wp/wp10021077.jpg"}
                         alt="Banner"
                     />
                     {/* Gradient Fade at bottom to blend with body */}
-                    <div className='absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent'></div>
+                    <div className='absolute inset-0 bg-linear-to-t from-slate-950/90 via-transparent to-transparent'></div>
                 </div>
 
                 {/* 2. Profile Info Wrapper (Overlaps Banner) */}
@@ -44,7 +66,7 @@ export default function SocialProfile() {
                             <div className='w-32 h-32 md:w-40 md:h-40 rounded-full border-[6px] border-slate-950 overflow-hidden bg-slate-800 shadow-xl'>
                                 <img
                                     className='w-full h-full object-cover'
-                                    src={user.avatar || "https://i.pravatar.cc/150"}
+                                    src={user.image || "https://i.pravatar.cc/150"}
                                     alt={user.name}
                                 />
                             </div>
@@ -60,17 +82,21 @@ export default function SocialProfile() {
                             {/* Text Info */}
                             <div className='text-center md:text-left mt-2 md:mt-0 w-full md:w-auto'>
                                 <h1 className='text-3xl font-bold text-white leading-tight'>{user.name}</h1>
-                                <p className='text-slate-500 font-medium'>@{user.name.replace(' ', '').toLowerCase()}</p>
+                                <p className='text-slate-500 font-medium'>@{user.username}</p>
                             </div>
 
                             {/* Action Buttons */}
                             <div className='flex gap-3 w-full md:w-auto justify-center md:justify-start'>
-                                <button className='bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2 rounded-full transition-colors shadow-lg shadow-red-900/20'>
-                                    Follow
-                                </button>
-                                <button className='bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-200 font-medium px-4 py-2 rounded-full transition-colors'>
-                                    Edit Profile
-                                </button>
+                                {authUser.username != username &&
+                                    <button className='bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2 rounded-full transition-colors shadow-lg shadow-red-900/20'>
+                                        Follow
+                                    </button>
+                                }
+                                {authUser.username == username &&
+                                    <button className='bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-200 font-medium px-4 py-2 rounded-full transition-colors'>
+                                        Edit Profile
+                                    </button>
+                                }
                             </div>
                         </div>
                     </div>
@@ -87,19 +113,19 @@ export default function SocialProfile() {
                         {/* Bio */}
                         <div>
                             <p className='text-slate-300 leading-relaxed text-sm md:text-base'>
-                                "Movies touch our hearts and awaken our vision."
+                                {user.bio}
                             </p>
 
                             {/* Metadata Icons */}
                             <div className='mt-4 flex flex-col gap-2 text-sm text-slate-500'>
                                 <div className='flex items-center gap-2'>
-                                    <MapPin className='w-4 h-4' /> New York, USA
+                                    <MapPin className='w-4 h-4' /> Egypt
                                 </div>
                                 <div className='flex items-center gap-2'>
                                     <LinkIcon className='w-4 h-4' /> <a href="#" className='text-red-400 hover:underline'>letterboxd.com/sarah</a>
                                 </div>
                                 <div className='flex items-center gap-2'>
-                                    <Calendar className='w-4 h-4' /> Joined March 2024
+                                    <Calendar className='w-4 h-4' /> Joined {user.joinedAt.slice(0, 10)}
                                 </div>
                             </div>
                         </div>
@@ -118,7 +144,6 @@ export default function SocialProfile() {
                     {/* --- MAIN FEED SECTION --- */}
                     <div className='flex-1'>
 
-                        {/* Reuse your existing components */}
                         <div className='mb-8'>
                             <NewPostEditor />
                         </div>
@@ -137,8 +162,8 @@ export default function SocialProfile() {
                         </div>
 
                         <div className='flex flex-col gap-6'>
-                            {REVIEWS.map((post) => (
-                                <Post key={post.id} post={post} />
+                            {posts.map((post) => (
+                                <Post key={post.id} post={post} user={user} />
                             ))}
                         </div>
                     </div>
