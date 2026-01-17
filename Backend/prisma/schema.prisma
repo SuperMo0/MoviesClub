@@ -33,7 +33,7 @@ model post {
   comments  comment[]
   createdAt DateTime  @default(now())
   movie     movie?    @relation(fields: [movieId], references: [id])
-  movieId   String
+  movieId   String?
   rating    Int?
 
   @@index([authorId, createdAt])

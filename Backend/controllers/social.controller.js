@@ -1,5 +1,5 @@
 import { prisma } from '../lib/prisma.js'
-// import v2 from '../lib/cloudinary.js'
+import v2 from '../lib/cloudinary.js'
 
 export async function getFeed(req, res) {
 
@@ -8,7 +8,7 @@ export async function getFeed(req, res) {
             orderBy: { createdAt: 'desc' },
             include: {
                 comments: true,
-                _count: { select: { likedBy: true } }
+                _count: { select: { likedBy: true }, }
             }
         })
 
@@ -19,6 +19,21 @@ export async function getFeed(req, res) {
     }
 }
 
+export async function getUserLikedPosts(req, res) {
+
+    let userId = req.userId;
+
+    let likedPosts = await prisma.user.findFirst({
+        where: {
+            id: userId
+        },
+        select: {
+            likedPosts: { select: { id: true } }
+        }
+    })
+
+    res.json({ likedPosts: likedPosts.likedPosts });
+}
 
 
 export async function getUsers(req, res) {
@@ -71,7 +86,8 @@ export async function getUserPosts(req, res, next) {
 
 }
 
-export async function likePost() {
+export async function likePost(req, res, next) {
+
     try {
         let postId = req?.params?.postId;
         let userId = req.userId;
@@ -98,7 +114,7 @@ export async function likePost() {
 }
 
 
-export async function deleteLikePost() {
+export async function deleteLikePost(req, res, next) {
     try {
         let postId = req?.params?.postId;
         let userId = req.userId;
@@ -106,17 +122,22 @@ export async function deleteLikePost() {
         let result = await prisma.post.update({
             data: {
                 likedBy: {
-                    delete: {
+                    disconnect: {
                         id: userId
                     }
                 }
             },
             select: {
                 _count: { select: { likedBy: true } }
+            },
+            where: {
+                id: postId
             }
         })
 
-        res.status(201).json({ message: "done", count: result._count.likedBy })
+        // console.log(result);
+
+        res.status(200).json({ message: "done", count: result._count.likedBy })
 
     } catch (error) {
         console.log(error);
@@ -130,6 +151,7 @@ export async function deleteLikePost() {
 
 
 export async function commentPost(req, res, next) {
+
     try {
         let postId = req?.params?.postId;
         let userId = req.userId;
@@ -154,30 +176,60 @@ export async function commentPost(req, res, next) {
 
 }
 
-export async function createPost() {
 
+export async function createPost(req, res, next) {
     try {
-        let userId = req.userId;
-        const { image } = req.file
-        const { content, movieId } = req.body;
+        const userId = req.userId;
+        const image = req.file;  //optional?
+        let { content, movieId, rating } = req.body;
 
-        let result = await prisma.post.create({
-            data: {
-                authorId: userId,
-                content: content,
-                image: image,
-                movieId: movieId
+        if (movieId == 'null' || movieId == '') movieId = null;
+
+        const saveToDb = async (imageUrl) => {
+            const post = await prisma.post.create({
+                data: {
+                    authorId: userId,
+                    content: content,
+                    image: imageUrl,
+                    movieId: movieId,
+                    rating: rating ? Number(rating) : null,
+                },
+                include: {
+                    _count: { select: { likedBy: true } }
+                }
+            });
+            return res.json({ post });
+        };
+
+        if (!image) {
+            return await saveToDb(null);
+        }
+
+        const uploadStream = v2.uploader.upload_stream(
+            { resource_type: 'image' },
+            async (err, result) => {
+                if (err) {
+                    console.log('Cloudinary Error:', err);
+                    return res.status(500).json({ message: 'Error uploading image' });
+                }
+
+                try {
+                    await saveToDb(result.secure_url);
+                } catch (dbError) {
+                    next(dbError);
+                }
             }
-        })
+        );
 
-        res.status(201).json({ post: result })
+        uploadStream.end(image.buffer);
 
     } catch (error) {
         console.log(error);
-        next(error)
+        next(error);
     }
-
 }
+
+
 
 export async function updateProfile(req, res) {
     try {

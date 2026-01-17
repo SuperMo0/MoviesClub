@@ -15,13 +15,15 @@ router.get('/posts/:userId', controller.getUserPosts);
 
 router.use(protect)
 
-router.post('/like/postId', controller.likePost)
+router.get('/liked', controller.getUserLikedPosts);
 
-router.delete('/like/postId', controller.deleteLikePost)
+router.post('/like/:postId', controller.likePost);
 
-router.post('/comment/postId', controller.commentPost)
+router.delete('/like/:postId', controller.deleteLikePost);
 
-router.post('/post', multer().single("image"), controller.createPost)
+router.post('/comment/:postId', controller.commentPost);
+
+router.post('/post', multer().single("image"), controller.createPost);
 
 router.put('/profile', multer().single("image"), controller.updateProfile);
 
