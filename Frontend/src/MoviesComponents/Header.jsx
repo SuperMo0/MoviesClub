@@ -46,7 +46,7 @@ const Header = ({ onLoginClick, onSignupClick }) => {
                         onClick={onSignupClick}>
                         Signup
                     </Button>
-                    <NavLink className={cn(!authUser && "hidden")} to={`/social/user/${authUser?.username}`} state={{ id: authUser?.id }}  >
+                    <NavLink className={cn(!authUser && "hidden")} to={`/social/user/${authUser?.id}`}>
                         <Button className="shadow-neon-red hover:shadow-neon-intense transition-all duration-300"
                             onClick={onSignupClick}>
                             My Profile

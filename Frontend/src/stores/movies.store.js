@@ -18,6 +18,7 @@ export const useMoviesStore = create((set, get) => ({
             allMovies.set(m.id, m);
         })
         set({ allMovies });
+        set({ todayMovies: allMovies });
     }
 
 }))

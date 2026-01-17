@@ -33,7 +33,7 @@ function App() {
 
   }
 
-  const shouldOpenLoginModal = isLoginModalOpen && !user
+  const shouldOpenLoginModal = isLoginModalOpen && !authUser
 
   return (
     <Routes >
@@ -48,7 +48,7 @@ function App() {
           </div>}>
         <Route index element={<Home />}></Route>
         <Route path='/social' element={<SocialMainPage />}></Route>
-        <Route path='/social/user/:username' element={<SocialProfile />}></Route>
+        <Route path='/social/user/:id' element={<SocialProfile />}></Route>
       </Route>
     </Routes>
   )

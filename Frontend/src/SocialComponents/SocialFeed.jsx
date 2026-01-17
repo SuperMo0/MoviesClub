@@ -7,7 +7,7 @@ import { useSocialStore } from '@/stores/social.store';
 
 export default function SocialFeed() {
 
-    const { getPosts, getUsers, users, userPosts, isLoading, allPosts } = useSocialStore();
+    const { getPosts, getUsers, users, userPosts, isLoading, allPosts, likedPosts, getLikedPosts } = useSocialStore();
 
     const { allMovies, getAllMovies } = useMoviesStore();
 
@@ -18,9 +18,14 @@ export default function SocialFeed() {
 
         if (!allMovies) getAllMovies();
 
+        if (!likedPosts) getLikedPosts();
+
     }, [])
 
-    if (isLoading || !users || !allPosts || !allMovies) return <div className="text-white p-10 text-center">Loading profile...</div>;
+    // console.log(likedPosts);
+
+
+    if (isLoading || !users || !allPosts || !allMovies || !likedPosts) return <div className="text-white p-10 text-center">Loading profile...</div>;
 
     return (
         <div className='flex flex-col gap-6 max-w-2xl mx-auto lg:mx-0'>

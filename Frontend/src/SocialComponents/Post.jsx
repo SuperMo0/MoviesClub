@@ -6,14 +6,12 @@ import { useAuthStore } from '@/stores/auth.store';
 
 export default function Post({ user, post }) {
 
-    // console.log(user, post);
+    const { likedPosts, likePost, unLikePost, commentPost } = useSocialStore();
 
-
-    const [isLiked, setIsLiked] = useState(false);
+    const [comment, setComment] = useState('');
     const { users } = useSocialStore();
     const { allMovies } = useMoviesStore();
     const { authUser } = useAuthStore()
-
 
     // Helper to render star rating
     const renderStars = (rating) => {
@@ -25,7 +23,28 @@ export default function Post({ user, post }) {
         ));
     };
 
+    const isLiked = likedPosts.find((p) => p.id == post.id);
     const movie = allMovies.get(post.movieId) || allMovies.get("2094918");
+
+
+    async function handleLikePost() {
+        if (isLiked) {
+            const { success, message } = await unLikePost(post);
+        }
+        else {
+            const { success, message } = await likePost(post);
+        }
+    }
+
+    async function handleCommentPost() {
+
+        commentPost(post, comment);
+
+    }
+
+
+
+
 
     return (
         <div className='bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition-colors shadow-sm'>
@@ -70,13 +89,13 @@ export default function Post({ user, post }) {
             {/* --- ACTIONS --- */}
             <div className='flex items-center gap-6 text-slate-500 py-3 border-t border-slate-800/50 mb-1'>
                 <button
-                    onClick={() => setIsLiked(!isLiked)}
+                    onClick={handleLikePost}
                     className={`flex items-center gap-2 text-sm group ${isLiked ? 'text-pink-600' : 'hover:text-pink-500'}`}
                 >
                     <div className={`p-2 rounded-full group-hover:bg-pink-500/10 transition-colors`}>
                         <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
                     </div>
-                    <span>{post._count.likedBy + (isLiked ? 1 : 0)}</span>
+                    <span>{post._count.likedBy}</span>
                 </button>
 
                 <button className='flex items-center gap-2 text-sm group hover:text-blue-400'>
@@ -132,11 +151,14 @@ export default function Post({ user, post }) {
                     />
                     <div className='relative flex-1 group'>
                         <input
+                            value={comment}
+                            onChange={(e) => { setComment(e.target.value) }}
                             type="text"
                             placeholder="Write a comment..."
                             className='w-full bg-slate-900 border border-slate-800 text-sm text-white placeholder:text-slate-600 rounded-full px-4 py-2 focus:outline-none focus:border-slate-600 focus:bg-slate-900 transition-all'
                         />
-                        <button className='absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-slate-500 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-colors opacity-0 group-focus-within:opacity-100'>
+                        <button className='absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-slate-500 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-colors opacity-0 group-focus-within:opacity-100'
+                            onClick={handleCommentPost}>
                             <Send className='w-3.5 h-3.5' />
                         </button>
                     </div>

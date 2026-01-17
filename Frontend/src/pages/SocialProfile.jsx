@@ -12,11 +12,9 @@ export default function SocialProfile() {
 
     const { authUser } = useAuthStore()
 
-    const { id } = useLocation().state  // there might be no Id if user came directly to the this Link
+    const { id } = useParams();
 
-    const { username } = useParams();
-
-    const { getPosts, getUsers, users, userPosts, isLoading } = useSocialStore();
+    const { getPosts, getUsers, users, userPosts, isLoading, likedPosts, getLikedPosts } = useSocialStore();
 
     const { allMovies, getAllMovies } = useMoviesStore();
 
@@ -27,10 +25,12 @@ export default function SocialProfile() {
 
         if (!allMovies) getAllMovies();
 
+        if (!likedPosts) getLikedPosts();
+
     }, [])
 
 
-    if (isLoading || !users || !userPosts || !allMovies) return <div className="text-white p-10 text-center">Loading profile...</div>;
+    if (isLoading || !users || !userPosts || !allMovies || !likedPosts) return <div className="text-white p-10 text-center">Loading profile...</div>;
 
     const user = users.get(id);
     const posts = userPosts.get(id);
@@ -87,12 +87,12 @@ export default function SocialProfile() {
 
                             {/* Action Buttons */}
                             <div className='flex gap-3 w-full md:w-auto justify-center md:justify-start'>
-                                {authUser.username != username &&
+                                {authUser.username != user.username &&
                                     <button className='bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2 rounded-full transition-colors shadow-lg shadow-red-900/20'>
                                         Follow
                                     </button>
                                 }
-                                {authUser.username == username &&
+                                {authUser.username == user.username &&
                                     <button className='bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-200 font-medium px-4 py-2 rounded-full transition-colors'>
                                         Edit Profile
                                     </button>
