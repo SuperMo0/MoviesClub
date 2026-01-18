@@ -66,7 +66,7 @@ export default function MovieBookingModal({ isModalOpen, movie, closeModal }) {
                         className="w-full h-full object-cover"
                         alt={movie.title}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent md:bg-gradient-to-r" />
+                    <div className="absolute inset-0 bg-linear-to-t from-slate-950 via-transparent to-transparent md:bg-linear-to-r" />
                 </div>
 
                 {/* RIGHT: Booking Content */}
