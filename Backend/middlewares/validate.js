@@ -1,4 +1,4 @@
-export function validateNewUser(name, email, password) {
+export function validateNewUser(name, username, password) {
 
     // to be implemented
 

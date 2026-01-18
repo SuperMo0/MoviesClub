@@ -1,71 +1,46 @@
 import { prisma } from '../lib/prisma.js'
 
-export async function insertUser(name, username, password) {
-    try {
-        let user = await prisma.user.create({
-            data: {
-                name: name,
-                username: username,
-                password: password,
-                chats: {
-                    connectOrCreate: {
-                        create: {
-                            id: "1",
-                            name: 'global'
-                        },
-                        where: {
-                            id: "1"
-                        }
-                    }
-                }
-            },
-            select: {
-                id: true,
-                name: true,
-                username: true,
-                avatar: true,
-            }
-        })
-        return user
-
-    } catch (error) {
-        console.log(error);
-
-        throw (error)
+export const userProfileSelect = {
+    id: true,
+    name: true,
+    username: true,
+    image: true,
+    bio: true,
+    joinedAt: true,
+    _count: {
+        select: {
+            followedBy: true,
+            following: true,
+        }
     }
 }
 
-export async function getUserByUsername(username) {
-    try {
-        const user = await prisma.user.findFirst({
-            where: {
-                username: username
-            }
-        })
-        return user;
+export async function insertUser(name, username, password) {
+    return await prisma.user.create({
+        data: {
+            name,
+            username,
+            password,
+            image: "https://i.pinimg.com/originals/e7/ba/95/e7ba955b143cda691280e1d0fd23ada6.jpg",
+        },
+        select: userProfileSelect
+    })
+}
 
-    } catch (error) {
-        throw error
-    }
+export async function getUserByUsername(username) {
+    return await prisma.user.findUnique({
+        where: {
+            username: username
+        }
+    })
 }
 
 
 export async function getUserById(id) {
-
-    try {
-        const user = prisma.user.findUnique({
-            where: {
-                id: id
-            }, select: {
-                id: true,
-                name: true,
-                username: true,
-                image: true,
-            }
-        })
-        return user;
-
-    } catch (error) {
-        throw error;
-    }
+    return await prisma.user.findUnique({
+        where: {
+            id: id
+        },
+        select: userProfileSelect
+    })
 }

@@ -7,13 +7,14 @@ export async function sign(user, res) {
         jwt.sign({ id: user.id }, SECRET, { expiresIn: "30 days" }, (error, token) => {
             if (error) return reject(error);
 
-            res.cookie("jwt", token, { maxAge: 2 * 24 * 60 * 60 * 1000, httpOnly: true })
+            res.cookie("jwt", token, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
             resolve(token);
         });
     })
 }
 
 export async function verify(token) {
+    if (!token) throw 'no token';
     return await new Promise((res, rej) => {
         jwt.verify(token, SECRET, (error, token) => {
             if (error) return rej(error);

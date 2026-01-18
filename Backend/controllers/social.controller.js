@@ -1,5 +1,6 @@
 import { prisma } from '../lib/prisma.js'
 import v2 from '../lib/cloudinary.js'
+import { userProfileSelect } from './../Models/auth.model.js'
 
 export async function getFeed(req, res) {
 
@@ -14,49 +15,51 @@ export async function getFeed(req, res) {
 
         res.json({ posts });
     } catch (error) {
-        console.log(error);
         next(error);
     }
 }
 
 export async function getUserLikedPosts(req, res) {
+    try {
+        const userId = req.userId;
 
-    let userId = req.userId;
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userId
+            },
+            select: {
+                likedPosts: {
+                    select: { id: true }
+                }
+            }
+        });
 
-    let likedPosts = await prisma.user.findFirst({
-        where: {
-            id: userId
-        },
-        select: {
-            likedPosts: { select: { id: true } }
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
         }
-    })
 
-    res.json({ likedPosts: likedPosts.likedPosts });
+        const likedPostIds = user.likedPosts.map(post => post.id);
+
+        return res.json({ likedPosts: likedPostIds });
+
+    } catch (error) {
+        console.error("Get Liked Posts Error:", error);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
 }
 
 
 export async function getUsers(req, res) {
-
     try {
         let users = await prisma.user.findMany({
-            select: {
-                _count: { select: { following: true, followedBy: true } },
-                name: true,
-                username: true,
-                id: true,
-                bio: true,
-                image: true,
-                joinedAt: true
-            }
+            select: userProfileSelect
         })
         res.json({ users });
     } catch (error) {
         console.log(error);
+
         next(error);
     }
-
-
 }
 
 export async function getUserPosts(req, res, next) {
@@ -77,10 +80,10 @@ export async function getUserPosts(req, res, next) {
             }
         }
         )
-
         res.json({ posts });
     } catch (error) {
         console.log(error);
+
         next(error);
     }
 
@@ -135,8 +138,6 @@ export async function deleteLikePost(req, res, next) {
             }
         })
 
-        // console.log(result);
-
         res.status(200).json({ message: "done", count: result._count.likedBy })
 
     } catch (error) {
@@ -176,52 +177,45 @@ export async function commentPost(req, res, next) {
 
 }
 
-
 export async function createPost(req, res, next) {
     try {
         const userId = req.userId;
-        const image = req.file;  //optional?
+        const image = req.file;
         let { content, movieId, rating } = req.body;
 
-        if (movieId == 'null' || movieId == '') movieId = null;
+        if (movieId === 'null' || movieId === '') movieId = null;
 
-        const saveToDb = async (imageUrl) => {
-            const post = await prisma.post.create({
-                data: {
-                    authorId: userId,
-                    content: content,
-                    image: imageUrl,
-                    movieId: movieId,
-                    rating: rating ? Number(rating) : null,
-                },
-                include: {
-                    _count: { select: { likedBy: true } }
-                }
-            });
-            return res.json({ post });
-        };
 
-        if (!image) {
-            return await saveToDb(null);
+        const dbRating = (rating && rating !== 'null') ? Number(rating) : null;
+
+        let imageUrl = null;
+
+        if (image) {
+            try {
+                imageUrl = await uploadImage(image.buffer, 'social_posts');
+            } catch (uploadError) {
+                console.error('Cloudinary Error:', uploadError);
+                return res.status(500).json({ message: 'Error uploading image' });
+            }
         }
 
-        const uploadStream = v2.uploader.upload_stream(
-            { resource_type: 'image' },
-            async (err, result) => {
-                if (err) {
-                    console.log('Cloudinary Error:', err);
-                    return res.status(500).json({ message: 'Error uploading image' });
-                }
-
-                try {
-                    await saveToDb(result.secure_url);
-                } catch (dbError) {
-                    next(dbError);
-                }
+        const post = await prisma.post.create({
+            data: {
+                authorId: userId,
+                content: content,
+                image: imageUrl,
+                movieId: movieId,
+                rating: dbRating,
+            },
+            include: {
+                author: {
+                    select: userProfileSelect
+                },
+                _count: { select: { likedBy: true, comments: true } }
             }
-        );
+        });
 
-        uploadStream.end(image.buffer);
+        return res.json({ post });
 
     } catch (error) {
         console.log(error);
@@ -229,22 +223,76 @@ export async function createPost(req, res, next) {
     }
 }
 
+async function uploadImage(image) {
+    if (!image) return;
 
+    const imageUrl = await new Promise((resolve, reject) => {
+        const stream = v2.uploader.upload_stream(
+            {
+                resource_type: 'image',
+            },
+            (error, result) => {
+                if (error) reject(error);
+                else resolve(result.secure_url);
+            }
+        );
+        stream.end(image);
+    });
+
+
+    return imageUrl;
+
+}
 
 export async function updateProfile(req, res) {
     try {
-
-        const { name } = req.body;
-        const avatar = req.file;
         const userId = req.userId;
+        const image = req.file;
+        const { name, bio } = req.body;
 
-        v2.uploader.upload_stream({ format: 'png', resource_type: 'image' }, async (err, result) => {
-            if (err) return res.status(500).json({ message: 'error uploading' });
-            let newUser = await model.updateProfile(userId, name, result.url);
-            return res.json({ user: newUser, message: "profile updated successfuly" });
-        }).end(avatar.buffer)
+        if (!name || name.trim() === "") {
+            return res.status(400).json({ message: "Name cannot be empty" });
+        }
+
+        const updateData = {
+            name: name,
+            bio: bio,
+        };
+
+        if (image) {
+            let imageUrl = await uploadImage(image.buffer);
+
+            updateData.image = imageUrl;
+        }
+
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: updateData,
+            select: {
+                id: true,
+                username: true,
+                name: true,
+                image: true,
+                bio: true,
+                joinedAt: true,
+                _count: {
+                    select: { followedBy: true, following: true }
+                }
+            }
+        });
+
+        return res.json({
+            user: updatedUser,
+            message: "Profile updated successfully"
+        });
 
     } catch (error) {
-        return res.status(401).json({ message: "Unauthorized" })
+        console.error("Update Profile Error:", error);
+
+        if (error.code === 'P2025') {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        return res.status(500).json({ message: "Internal server error" });
     }
 }

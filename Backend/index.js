@@ -5,6 +5,9 @@ import socialRouter from './Routes/social.router.js'
 import moviesRouter from './Routes/movies.router.js'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
+import { start } from './utils/fetchMovies.js'
+import cron from 'node-cron';
+
 
 const app = express();
 
@@ -24,8 +27,20 @@ app.use('/api/social', socialRouter);
 
 app.use('/api/movies', moviesRouter);
 
+app.use((err, req, res, next) => {
+    return res.status(500).json({ message: err });
+})
+
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-    console.log(`server running on port${PORT}`);
-})
+
+app.listen(PORT, async () => {
+    console.log(`server running on port ${PORT}`);
+
+    await start();
+
+    cron.schedule('0 3 * * *', async () => {
+        console.log("Running daily update...");
+        await start();
+    });
+});
