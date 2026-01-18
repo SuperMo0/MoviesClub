@@ -4,6 +4,7 @@ import { useSocialStore } from '@/stores/social.store';
 import { useMoviesStore } from '@/stores/movies.store';
 import { useAuthStore } from '@/stores/auth.store';
 import { NavLink } from 'react-router';
+import { useLoginModal } from '@/App';
 
 export default function Post({ user, post }) {
 
@@ -13,8 +14,8 @@ export default function Post({ user, post }) {
     const { users } = useSocialStore();
     const { allMovies } = useMoviesStore();
     const { authUser } = useAuthStore()
+    const { openLogin } = useLoginModal();
 
-    // Helper to render star rating
     const renderStars = (rating) => {
         return Array(5).fill(0).map((_, i) => (
             <Star
@@ -24,11 +25,15 @@ export default function Post({ user, post }) {
         ));
     };
 
-    const isLiked = likedPosts.find((p) => p.id == post.id);
+
+    const isLiked = (likedPosts?.has(post.id));
     const movie = allMovies.get(post.movieId) || allMovies.get("2094918");
 
-
     async function handleLikePost() {
+        if (!authUser) {
+            openLogin();
+            return;
+        }
         if (isLiked) {
             const { success, message } = await unLikePost(post);
         }
@@ -38,18 +43,21 @@ export default function Post({ user, post }) {
     }
 
     async function handleCommentPost() {
+        if (!authUser) {
+            openLogin();
+            return;
+        }
         commentPost(post, comment);
     }
 
     return (
         <div className='bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition-colors shadow-sm'>
 
-            {/* --- HEADER --- */}
             <div className='flex justify-between items-start mb-3'>
                 <div className='flex gap-3'>
                     <NavLink to={`/social/user/${user.id}`}>
                         <img
-                            src={user.image}
+                            src={user.image || "https://i.pinimg.com/originals/e7/ba/95/e7ba955b143cda691280e1d0fd23ada6.jpg"}
                             className='w-10 h-10 rounded-full bg-slate-800 object-cover'
                             alt={user.name}
                         />
@@ -63,7 +71,7 @@ export default function Post({ user, post }) {
                             </NavLink>
                         </div>
 
-                        {/* Movie Tag */}
+
                         {movie && (
                             <div className='flex items-center gap-2 mt-0.5 text-xs text-slate-400'>
                                 <span className='flex items-center gap-1 text-red-400 font-medium'>
@@ -77,7 +85,6 @@ export default function Post({ user, post }) {
                 <button className='text-slate-500 hover:text-white'><MoreHorizontal className='w-5 h-5' /></button>
             </div>
 
-            {/* --- CONTENT --- */}
             <p className='text-slate-300 leading-relaxed mb-3'>{post.content}</p>
 
             {post.image && (
@@ -86,7 +93,6 @@ export default function Post({ user, post }) {
                 </div>
             )}
 
-            {/* --- ACTIONS --- */}
             <div className='flex items-center gap-6 text-slate-500 py-3 border-t border-slate-800/50 mb-1'>
                 <button
                     onClick={handleLikePost}
@@ -112,16 +118,14 @@ export default function Post({ user, post }) {
                 </button>
             </div>
 
-            {/* --- COMMENTS SECTION (Always Visible) --- */}
             <div className='bg-slate-950/30 rounded-lg p-3 border border-slate-800/50'>
 
-                {/* 1. Existing Comments (Only if they exist) */}
                 {post.comments && post.comments.length > 0 && (
                     <div className='space-y-4 mb-4 pl-1'>
                         {post.comments.map((comment) => (
                             <div key={comment.id} className='flex gap-3'>
                                 <img
-                                    src={users.get(comment.authorId).image}
+                                    src={users.get(comment.authorId).image || "https://i.pinimg.com/originals/e7/ba/95/e7ba955b143cda691280e1d0fd23ada6.jpg"}
                                     className='w-7 h-7 rounded-full border border-slate-800 shrink-0 object-cover'
                                     alt=""
                                 />
@@ -142,10 +146,10 @@ export default function Post({ user, post }) {
                     </div>
                 )}
 
-                {/* 2. Add Comment Input (Always Visible) */}
+
                 <div className='flex gap-3 items-center'>
                     <img
-                        src={authUser.image}
+                        src={authUser?.image || "https://i.pinimg.com/originals/e7/ba/95/e7ba955b143cda691280e1d0fd23ada6.jpg"}
                         className='w-8 h-8 rounded-full border border-slate-700 bg-slate-800 object-cover'
                         alt="Me"
                     />

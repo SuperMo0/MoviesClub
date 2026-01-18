@@ -2,9 +2,13 @@ import React from 'react'
 import MovieCard from './MovieCard'
 import movies from '../movies.js'
 import { Flame } from 'lucide-react'
+import { useMoviesStore } from '@/stores/movies.store';
 
 export default function ShowingNow({ handleMovieClick }) {
-    const displayMovies = movies.slice(3, 9);
+
+
+    const { getTodayMovie, todayMovies } = useMoviesStore();
+
 
     return (
         <section className="container mx-auto px-4 py-16">
@@ -20,7 +24,7 @@ export default function ShowingNow({ handleMovieClick }) {
 
             <div className="group/grid grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
 
-                {displayMovies.map((movie, index) => (
+                {[...todayMovies.values()].map((movie, index) => (
                     <div key={index} className="transition-opacity duration-300 group-hover/grid:hover:opacity-100 group-hover/grid:opacity-50"
                         onClick={() => { handleMovieClick(movie) }}>
                         <MovieCard movie={movie} />

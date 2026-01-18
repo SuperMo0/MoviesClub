@@ -7,17 +7,20 @@ import {
     CarouselPrevious,
 } from "@/components/ui/carousel"
 import MovieHeroCard from './MovieHeroCard'
-import movies from '../movies.js'
 import Autoplay from "embla-carousel-autoplay"
+import { useMoviesStore } from '@/stores/movies.store';
 
-export default function Hero() {
+export default function Hero({ handleMovieClick }) {
     const [api, setApi] = useState();
+
+    const { getTodayMovie, todayMovies } = useMoviesStore();
 
     function handleInteraction() {
         if (!api) return;
         console.log(api.plugins().autoplay.stop());
 
     }
+    let featuredMovies = [...todayMovies.values()];
     return (
         <div>
             <Carousel opts={{ loop: true }} setApi={setApi} plugins={[
@@ -28,9 +31,9 @@ export default function Hero() {
 
             ]}>
                 <CarouselContent>
-                    <CarouselItem > <MovieHeroCard movie={movies[0]} /> </CarouselItem>
-                    <CarouselItem><MovieHeroCard movie={movies[1]} /></CarouselItem>
-                    <CarouselItem><MovieHeroCard movie={movies[2]} /></CarouselItem>
+                    <CarouselItem > <MovieHeroCard handleMovieClick={handleMovieClick} movie={featuredMovies[0]} /> </CarouselItem>
+                    <CarouselItem><MovieHeroCard handleMovieClick={handleMovieClick} movie={featuredMovies[1]} /></CarouselItem>
+                    <CarouselItem><MovieHeroCard handleMovieClick={handleMovieClick} movie={featuredMovies[2]} /></CarouselItem>
                 </CarouselContent>
 
                 <div onClick={handleInteraction}>

@@ -1,8 +1,11 @@
 import React from 'react'
 import { Star, Ticket } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useMoviesStore } from '@/stores/movies.store';
 
 export default function MovieCard({ movie }) {
+
+
     return (
         <div className="group relative w-full h-full rounded-xl overflow-hidden bg-card border border-white/5 transition-all duration-500 hover:scale-105 hover:shadow-neon-red hover:z-10 cursor-pointer">
 

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import api from '../lib/axios.js';
+import { useSocialStore } from "./social.store.js";
 
 export const useAuthStore = create((set) => ({
     authUser: null,
@@ -10,9 +11,10 @@ export const useAuthStore = create((set) => ({
     check: async () => {
         try {
             const res = await api.get('/auth/check');
+            let user = res.data.user;
+            if (!user) throw 'not logged in ';
             set({ authUser: res.data.user });
         } catch (error) {
-            console.error("Auth check failed:", error);
             set({ authUser: null });
         } finally {
             set({ isChecking: false });
@@ -51,6 +53,7 @@ export const useAuthStore = create((set) => ({
         try {
             await api.post('/auth/logout');
             set({ authUser: null });
+            useSocialStore.setState({ likedPosts: null });
             return { success: true, message: "Logged out successfully" };
         } catch (error) {
             return { success: false, message: error.response?.data?.message || "Logout failed" };

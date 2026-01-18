@@ -2,9 +2,12 @@ import { Button } from '@/components/ui/button'
 import { PlayCircle, CalendarClock } from 'lucide-react'
 import React from 'react'
 
-export default function MovieHeroCard({ movie }) {
-    return (
+export default function MovieHeroCard({ movie, handleMovieClick }) {
 
+
+    {/* if (!movie.genre) console.log(movie);*/ }
+
+    return (
         <div className="relative w-full overflow-hidden flex flex-col bg-background">
 
             <div className="absolute inset-0 z-0">
@@ -56,6 +59,7 @@ export default function MovieHeroCard({ movie }) {
                         <Button
                             size="lg"
                             className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-neon-red w-full sm:w-auto h-12"
+                            onClick={() => { handleMovieClick(movie) }}
                         >
                             <CalendarClock className="mr-2 h-5 w-5" />
                             Show Times

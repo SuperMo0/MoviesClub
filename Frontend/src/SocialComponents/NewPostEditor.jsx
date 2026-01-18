@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/auth.store';
 import { useLoginModal } from '@/App';
 import { useSocialStore } from '@/stores/social.store';
 import { useMoviesStore } from '@/stores/movies.store';
+import { toast } from 'react-toastify';
 
 export default function NewPostEditor() {
 
@@ -16,12 +17,13 @@ export default function NewPostEditor() {
     const [image, setImage] = useState(null);
 
     const { authUser } = useAuthStore()
-    const setIsLoginModalOpen = useLoginModal();
     const { createNewPost } = useSocialStore();
     const { todayMovies } = useMoviesStore();
 
     const pickerRef = useRef(null);
     const fileInputRef = useRef(null);
+
+    const { openLogin } = useLoginModal();
 
     useEffect(() => {
         function handleClickOutside(event) {
@@ -35,9 +37,15 @@ export default function NewPostEditor() {
 
     async function handlePostSubmit() {
         if (!authUser) {
-            setIsLoginModalOpen(true);
+            openLogin();
             return;
         }
+
+        if (!image || !content || !(selectedMovie && rating)) {
+            toast.info("Post can't be Empty!");
+            return;
+        }
+
 
         let imageBlob = image ? await (await fetch(image)).blob() : null;
 
@@ -98,7 +106,7 @@ export default function NewPostEditor() {
         <div className='bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-lg'>
             <div className='flex gap-4'>
                 <img
-                    src={authUser?.image || "https://i.pravatar.cc/150?u=my_user"}
+                    src={authUser?.image || "https://i.pinimg.com/originals/e7/ba/95/e7ba955b143cda691280e1d0fd23ada6.jpg"}
                     className='w-10 h-10 rounded-full bg-slate-800 object-cover'
                     alt="My Avatar"
                 />
@@ -111,7 +119,6 @@ export default function NewPostEditor() {
                         className='w-full bg-transparent text-white placeholder:text-slate-500 resize-none outline-none text-base min-h-20'
                     />
 
-                    {/* --- IMAGE PREVIEW SECTION --- */}
                     {image && (
                         <div className="relative rounded-xl overflow-hidden border border-slate-700 group">
                             <img
@@ -128,7 +135,6 @@ export default function NewPostEditor() {
                         </div>
                     )}
 
-                    {/* Selected Movie & Rating */}
                     {selectedMovie && (
                         <div className="flex flex-wrap items-center gap-4 bg-slate-950/50 p-3 rounded-lg border border-slate-800">
                             <div className="flex items-center gap-2 text-red-400 text-sm font-medium">

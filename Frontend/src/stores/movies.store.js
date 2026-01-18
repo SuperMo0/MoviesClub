@@ -1,6 +1,5 @@
 import api from "@/lib/axios";
 import { create } from "zustand";
-// import movies from '@/movies.js'
 
 export const useMoviesStore = create((set, get) => ({
 
@@ -9,29 +8,31 @@ export const useMoviesStore = create((set, get) => ({
     todayMovies: null,
 
     getAllMovies: async function () {
+        if (get().allMovies) return;
 
         let allMovies = new Map();
         let result = await api.get('/movies');
 
         let movies = result.data.movies;
+
         movies.forEach(m => {
             allMovies.set(m.id, m);
         })
         set({ allMovies });
-        set({ todayMovies: allMovies });
     },
 
     getTodayMovie: async function () {
+        if (get().todayMovies) return;
+        let todayMovies = new Map();
 
-        let allMovies = new Map();
-        let result = await api.get('/movies');
+        let result = await api.get('/movies/today');
 
         let movies = result.data.movies;
+
         movies.forEach(m => {
-            allMovies.set(m.id, m);
+            todayMovies.set(m.id, m);
         })
-        set({ allMovies });
-        set({ todayMovies: allMovies });
+        set({ todayMovies });
     }
 
 }))

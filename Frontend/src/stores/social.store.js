@@ -32,7 +32,7 @@ export const useSocialStore = create((set, get) => ({
     getLikedPosts: async () => {
         try {
             let result = await api.get('/social/liked');
-            let likedPosts = result.data.likedPosts;
+            const likedPosts = new Set(result.data.likedPosts);
             set({ likedPosts });
         } catch (error) {
             console.log(error);
@@ -139,13 +139,16 @@ export const useSocialStore = create((set, get) => ({
     },
 
     likePost: async (post) => {
-        // SNAPSHOTS
-        const prevLiked = get().likedPosts;
+        const prevLiked = new Set(get().likedPosts);
         const prevAll = get().allPosts;
         const prevUserPosts = get().userPosts;
 
-        //  OPTIMISTIC UPDATE
+        // OPTIMISTIC UPDATE
         set((state) => {
+
+            const newLiked = new Set(state.likedPosts);
+            newLiked.add(post.id);
+
             const newAllPosts = state.allPosts.map((p) =>
                 p.id === post.id
                     ? { ...p, _count: { ...p._count, likedBy: (p._count?.likedBy || 0) + 1 } }
@@ -165,13 +168,12 @@ export const useSocialStore = create((set, get) => ({
             }
 
             return {
-                likedPosts: [...state.likedPosts, post],
+                likedPosts: newLiked,
                 allPosts: newAllPosts,
                 userPosts: newUserPostsMap
             };
         });
 
-        //  API CALL
         try {
             await api.post(`/social/like/${post.id}`);
             return { success: true, message: 'ok' };
@@ -183,20 +185,23 @@ export const useSocialStore = create((set, get) => ({
     },
 
     unLikePost: async (post) => {
-        //  SNAPSHOTS
-        const prevLiked = get().likedPosts;
+
+        const prevLiked = new Set(get().likedPosts);
         const prevAll = get().allPosts;
         const prevUserPosts = get().userPosts;
 
-        //  OPTIMISTIC UPDATE
+        // OPTIMISTIC UPDATE
         set((state) => {
+
+            const newLiked = new Set(state.likedPosts);
+            newLiked.delete(post.id);
+
 
             const newAllPosts = state.allPosts.map((p) =>
                 p.id === post.id
                     ? { ...p, _count: { ...p._count, likedBy: Math.max(0, (p._count?.likedBy || 1) - 1) } }
                     : p
             );
-
 
             const newUserPostsMap = new Map(state.userPosts);
             const authorPosts = newUserPostsMap.get(post.authorId);
@@ -211,23 +216,23 @@ export const useSocialStore = create((set, get) => ({
             }
 
             return {
-                likedPosts: state.likedPosts.filter(p => p.id !== post.id),
+                likedPosts: newLiked,
                 allPosts: newAllPosts,
                 userPosts: newUserPostsMap
             };
         });
 
-        // 3. API CALL
         try {
             await api.delete(`/social/like/${post.id}`);
             return { success: true, message: 'ok' };
         } catch (error) {
             console.log("Unlike failed, reverting...");
-            // 4. REVERT ON ERROR
             set({ likedPosts: prevLiked, allPosts: prevAll, userPosts: prevUserPosts });
             return { success: false, message: 'error' };
         }
     },
+
+
 
     commentPost: async (post, content) => {
         const currentUser = useAuthStore.getState().authUser;
