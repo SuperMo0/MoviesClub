@@ -4,12 +4,16 @@ import { REVIEWS } from '@/socialData' // Make sure this path is correct
 import Post from './Post'
 import { useMoviesStore } from '@/stores/movies.store';
 import { useSocialStore } from '@/stores/social.store';
+import { useAuthStore } from '@/stores/auth.store';
 
 export default function SocialFeed() {
 
     const { getPosts, getUsers, users, userPosts, isLoading, allPosts, likedPosts, getLikedPosts } = useSocialStore();
 
     const { allMovies, getAllMovies } = useMoviesStore();
+
+    const { authUser } = useAuthStore();
+
 
     useEffect(() => {
         if (!users) getUsers();
@@ -22,8 +26,6 @@ export default function SocialFeed() {
 
     }, [])
 
-    // console.log(likedPosts);
-
 
     if (isLoading || !users || !allPosts || !allMovies || !likedPosts) return <div className="text-white p-10 text-center">Loading profile...</div>;
 
@@ -34,9 +36,11 @@ export default function SocialFeed() {
 
             {/* Render Posts */}
             <div className='flex flex-col gap-6'>
-                {allPosts.map((post) => (
-                    <Post key={post.id} post={post} user={users.get(post.authorId)} />
-                ))}
+                {allPosts.map((post) => {
+                    const isOwner = authUser?.id === post.authorId;
+                    const user = isOwner ? authUser : users.get(post.authorId);
+                    return <Post key={post.id} post={post} user={user} />
+                })}
             </div>
         </div>
     )

@@ -51,8 +51,10 @@ export default function NewPostEditor() {
         setImage(null);
         setSelectedMovie(null);
         setRating(0);
+        fileInputRef.current.value = null;
 
-        createNewPost(formData);
+
+        const { success } = await createNewPost(formData);
     }
 
     function handleImageUpload(e) {

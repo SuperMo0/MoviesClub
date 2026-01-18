@@ -3,6 +3,7 @@ import { Heart, MessageCircle, Share2, MoreHorizontal, CheckCircle2, Film, Star,
 import { useSocialStore } from '@/stores/social.store';
 import { useMoviesStore } from '@/stores/movies.store';
 import { useAuthStore } from '@/stores/auth.store';
+import { NavLink } from 'react-router';
 
 export default function Post({ user, post }) {
 
@@ -37,14 +38,8 @@ export default function Post({ user, post }) {
     }
 
     async function handleCommentPost() {
-
         commentPost(post, comment);
-
     }
-
-
-
-
 
     return (
         <div className='bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition-colors shadow-sm'>
@@ -52,15 +47,20 @@ export default function Post({ user, post }) {
             {/* --- HEADER --- */}
             <div className='flex justify-between items-start mb-3'>
                 <div className='flex gap-3'>
-                    <img
-                        src={user.image}
-                        className='w-10 h-10 rounded-full bg-slate-800 object-cover'
-                        alt={user.name}
-                    />
+                    <NavLink to={`/social/user/${user.id}`}>
+                        <img
+                            src={user.image}
+                            className='w-10 h-10 rounded-full bg-slate-800 object-cover'
+                            alt={user.name}
+                        />
+                    </NavLink>
                     <div>
                         <div className='flex items-center gap-2'>
-                            <span className='font-bold text-white'>{user.name}</span>
-                            <span className='text-xs text-slate-500'>{post.timestamp}</span>
+                            <NavLink to={`/social/user/${user.id}`}>
+                                <span className='font-bold text-white'>{user.name}</span>
+                                &#32;
+                                <span className='text-xs text-slate-500'>{post.createdAt.slice(0, 10)}</span>
+                            </NavLink>
                         </div>
 
                         {/* Movie Tag */}

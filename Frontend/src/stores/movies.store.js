@@ -19,6 +19,19 @@ export const useMoviesStore = create((set, get) => ({
         })
         set({ allMovies });
         set({ todayMovies: allMovies });
+    },
+
+    getTodayMovie: async function () {
+
+        let allMovies = new Map();
+        let result = await api.get('/movies');
+
+        let movies = result.data.movies;
+        movies.forEach(m => {
+            allMovies.set(m.id, m);
+        })
+        set({ allMovies });
+        set({ todayMovies: allMovies });
     }
 
 }))
