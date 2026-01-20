@@ -1,16 +1,36 @@
-# React + Vite
+# MovieClub
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack social platform for movie lovers to share reviews,and track real-time cinema listings. This project is part of my Fullstack learning journey 
 
-Currently, two official plugins are available:
+## 🛠 Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Frontend:**
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![Zustand](https://img.shields.io/badge/zustand-%2320232a.svg?style=for-the-badge&logo=react&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
-## React Compiler
+**Backend:**
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
+**Database & Tools:**
+![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+![ALT TEXT](./Preview/image1.png)
+![ALT TEXT](./Preview/image2.png)
+![ALT TEXT](./Preview/image3.png)
+![ALT TEXT](./Preview/image4.png)
+![ALT TEXT](./Preview/image5.png)
+![ALT TEXT](./Preview/image6.png)
+![ALT TEXT](./Preview/image7.png)
 
-## Expanding the ESLint configuration
+## ✨ Key Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+* **Real-Time Showtimes:** Displays live movie showtimes by scraping data directly from local Egyptian cinemas. Users can see exactly when and where a movie is playing.
+* **Social Feed:** Post movie reviews, like posts, and interact with a community of movie lovers.
+* **Profile Customization:** Upload and crop profile images.
+* **Optimistic UI:** Instant feedback on likes and follows for a snappy, modern feel.
+* **Fully Responsive:** A "mobile-first" layout designed to provide a seamless experience on any device.
+---
