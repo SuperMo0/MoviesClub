@@ -58,7 +58,6 @@ export default function MovieBookingModal({ isModalOpen, movie, closeModal }) {
                     <X className="w-5 h-5" />
                 </button>
 
-
                 {/* LEFT: Image */}
                 <div className="w-full md:w-2/5 h-64 md:h-auto relative shrink-0">
                     <img

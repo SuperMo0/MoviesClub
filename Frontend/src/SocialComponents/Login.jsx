@@ -13,7 +13,7 @@ import { useLoginModal } from '@/App'
 
 export default function Login({ isOpen, onClose }) {
 
-    const { user, login, isSigningIn } = useAuthStore()
+    const { login, isLogginIn, guestLogin } = useAuthStore()
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState(null);
@@ -24,14 +24,23 @@ export default function Login({ isOpen, onClose }) {
     if (!isOpen) return null;
 
     async function handleLoginButtonClick() {
-        // validate First 
-
+        if (username.trim() == '' || password.trim() == '') {
+            return setMessage('All Fields are required');
+        }
         const { success, message } = await login({
             username,
             password
         })
 
         if (!success) setMessage(message);
+    }
+
+    async function handleGuestLogin() {
+
+        let { success, message } = await guestLogin();
+
+        if (!success) setMessage(message);
+        else onClose();
     }
 
     return (
@@ -105,9 +114,16 @@ export default function Login({ isOpen, onClose }) {
                             onClick={handleLoginButtonClick}>
                             Sign In
                         </Button>
+
+                        <Button
+                            className="w-full h-11 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-all shadow-lg shadow-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                            onClick={handleGuestLogin}
+                            disabled={isLogginIn}
+                        >
+                            {isLogginIn ? "Loggin In..." : "Login as Guest"}
+                        </Button>
                     </FieldSet>
 
-                    {/* Footer / Sign Up Link */}
                     <div className='mt-6 text-center text-sm text-slate-500'>
                         Don't have an account?{' '}
                         <a type='button' onClick={openSignup} className='text-white hover:text-red-500 font-medium transition-colors cursor-pointer'>

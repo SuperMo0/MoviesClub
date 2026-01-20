@@ -13,7 +13,7 @@ import { useLoginModal } from '@/App'
 
 export default function Signup({ isOpen, onClose }) {
 
-    const { signup, isSigningUp } = useAuthStore()
+    const { signup, isSigningUp, guestLogin, isLogginIn } = useAuthStore()
 
 
     const [name, setName] = useState("");
@@ -25,14 +25,20 @@ export default function Signup({ isOpen, onClose }) {
 
     if (!isOpen) return null;
 
+
+    async function handleGuestLogin() {
+
+        let { success, message } = await guestLogin();
+
+        if (!success) setMessage(message);
+        else onClose();
+    }
+
     async function handleSignupButtonClick() {
-        setMessage(null);
-
-        if (!name || !username || !password) {
-            setMessage("All fields are required");
-            return;
+        if (username.trim() == '' || password.trim() == '' || name.trim == '') {
+            return setMessage('All Fields are required');
         }
-
+        setMessage(null);
         const { success, message } = await signup({
             name,
             username,
@@ -83,6 +89,7 @@ export default function Signup({ isOpen, onClose }) {
                                     Full Name
                                 </FieldLabel>
                                 <Input
+                                    required
                                     id="name"
                                     type="text"
                                     placeholder="John Doe"
@@ -130,9 +137,17 @@ export default function Signup({ isOpen, onClose }) {
                         >
                             {isSigningUp ? "Creating Account..." : "Sign Up"}
                         </Button>
+
+                        <Button
+                            className="w-full h-11 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-all shadow-lg shadow-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                            onClick={handleGuestLogin}
+                            disabled={isSigningUp}
+                        >
+                            {isLogginIn ? "Loggin In..." : "Login as Guest"}
+                        </Button>
+
                     </FieldSet>
 
-                    {/* Footer / Switch to Login */}
                     <div className='mt-6 text-center text-sm text-slate-500'>
                         Already have an account?{' '}
                         <button

@@ -41,7 +41,7 @@ export default function NewPostEditor() {
             return;
         }
 
-        if (!image || !content || !(selectedMovie && rating)) {
+        if (!image && !content && !(selectedMovie && rating)) {
             toast.info("Post can't be Empty!");
             return;
         }

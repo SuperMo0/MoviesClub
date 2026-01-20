@@ -27,7 +27,7 @@ export default function SocialProfile() {
     const fileInputRef = useRef(null);
 
 
-    const [previewImage, setPreviewImage] = useState(authUser.image);
+    const [previewImage, setPreviewImage] = useState(authUser?.image);
     const [imageBlob, setImageBlob] = useState(null);
     const [rawImageForCropper, setRawImageForCropper] = useState(null);
     const [showCropper, setShowCropper] = useState(false);

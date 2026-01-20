@@ -4,7 +4,7 @@ import { useSocialStore } from "./social.store.js";
 
 export const useAuthStore = create((set) => ({
     authUser: null,
-    isSigningIn: false,
+    isLogginIn: false,
     isSigningUp: false,
     isChecking: true,
 
@@ -22,7 +22,7 @@ export const useAuthStore = create((set) => ({
     },
 
     login: async (data) => {
-        set({ isSigningIn: true });
+        set({ isLogginIn: true });
         try {
             const res = await api.post('/auth/login', data);
             set({ authUser: res.data.user });
@@ -31,7 +31,7 @@ export const useAuthStore = create((set) => ({
             const message = error.response?.data?.message || "Login failed";
             return { success: false, message };
         } finally {
-            set({ isSigningIn: false });
+            set({ isLogginIn: false });
         }
     },
 
@@ -57,6 +57,21 @@ export const useAuthStore = create((set) => ({
             return { success: true, message: "Logged out successfully" };
         } catch (error) {
             return { success: false, message: error.response?.data?.message || "Logout failed" };
+        }
+    },
+
+    guestLogin: async () => {
+        try {
+            let result = await api.post('/auth/login', {
+                username: 'guest11',
+                password: '123'
+            })
+            set({ authUser: result.data.user });
+            return { success: true, message: 'ok' };
+        } catch (error) {
+            console.log(error);
+            const message = error.response?.data?.message || "Login failed";
+            return { success: false, message };
         }
     }
 }));
