@@ -86,7 +86,7 @@ export default function NewPostEditor() {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0);
 
-                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.1);
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.5);
 
                 setImage(compressedDataUrl);
             };
