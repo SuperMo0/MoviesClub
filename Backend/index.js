@@ -7,6 +7,7 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import { start } from './utils/fetchMovies.js'
 import cron from 'node-cron';
+import path from 'path'
 
 
 const app = express();
@@ -18,8 +19,8 @@ app.use(cors({
 
 app.use(cookieParser());
 
-
 app.use(express.json());
+
 
 app.use('/api/auth', authRouter);
 
@@ -34,10 +35,21 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3000;
 
 
+
+if (process.env.MODE != 'development') {
+    const staticPath = path.join(process.cwd(), '..', 'Frontend/dist');
+
+    app.use(express.static(path.join(staticPath)));
+
+    app.get('/{*splat}', (req, res) => {
+        res.sendFile(path.join(staticPath, '/index.html'));
+    })
+}
+
 app.listen(PORT, async () => {
     console.log(`server running on port ${PORT}`);
 
-    await start();
+    if (process.env.MODE != 'development') await start();
 
     cron.schedule('0 3 * * *', async () => {
         console.log("Running daily update...");

@@ -1,9 +1,11 @@
 -- CreateTable
 CREATE TABLE "user" (
-    "id" TEXT NOT NULL DEFAULT 'uuid()',
-    "userName" TEXT NOT NULL,
+    "id" TEXT NOT NULL,
+    "username" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
     "name" TEXT,
     "image" TEXT,
+    "bio" TEXT,
     "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
@@ -11,18 +13,20 @@ CREATE TABLE "user" (
 
 -- CreateTable
 CREATE TABLE "post" (
-    "id" TEXT NOT NULL DEFAULT 'uuid()',
+    "id" TEXT NOT NULL,
     "content" TEXT,
+    "image" TEXT,
     "authorId" TEXT NOT NULL,
-    "movieId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "movieId" TEXT,
+    "rating" INTEGER,
 
     CONSTRAINT "post_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "movie" (
-    "id" TEXT NOT NULL DEFAULT 'uuid()',
+    "id" TEXT NOT NULL,
     "sourceId" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT,
@@ -33,7 +37,7 @@ CREATE TABLE "movie" (
 
 -- CreateTable
 CREATE TABLE "comment" (
-    "id" TEXT NOT NULL DEFAULT 'uuid()',
+    "id" TEXT NOT NULL,
     "content" TEXT NOT NULL,
     "authorId" TEXT NOT NULL,
     "postId" TEXT,
@@ -44,7 +48,7 @@ CREATE TABLE "comment" (
 
 -- CreateTable
 CREATE TABLE "genre" (
-    "id" TEXT NOT NULL DEFAULT 'uuid()',
+    "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
 
     CONSTRAINT "genre_pkey" PRIMARY KEY ("id")
@@ -83,7 +87,7 @@ CREATE TABLE "_movie_genre" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "user_userName_key" ON "user"("userName");
+CREATE UNIQUE INDEX "user_username_key" ON "user"("username");
 
 -- CreateIndex
 CREATE INDEX "post_authorId_createdAt_idx" ON "post"("authorId", "createdAt");
