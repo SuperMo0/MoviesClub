@@ -20,7 +20,7 @@ A full-stack social platform for movie lovers to share reviews,and track real-ti
 ![PostgreSQL](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
 ---
-
+![ALT TEXT](./Preview/video.gif)
 ![ALT TEXT](./Preview/image1.png)
 ![ALT TEXT](./Preview/image2.png)
 ![ALT TEXT](./Preview/image3.png)
