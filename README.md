@@ -12,6 +12,8 @@ A full-stack social platform for movie lovers to share reviews,and track real-ti
 **Backend:**
 ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
 ![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
+![Cheerio](https://img.shields.io/badge/cheerio-%23E88C1F.svg?style=for-the-badge&logo=cheerio&logoColor=white)
+![Web Scraping](https://img.shields.io/badge/web--scraping-%23444444.svg?style=for-the-badge&logo=googlesheets&logoColor=white)
 
 **Database:**
 ![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
