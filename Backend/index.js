@@ -36,7 +36,7 @@ const PORT = process.env.PORT || 3000;
 
 
 
-if (process.env.MODE != 'development') {
+if (process.env.NODE_ENV != 'development') {
     const staticPath = path.join(process.cwd(), '..', 'Frontend/dist');
 
     app.use(express.static(path.join(staticPath)));
@@ -49,7 +49,7 @@ if (process.env.MODE != 'development') {
 app.listen(PORT, async () => {
     console.log(`server running on port ${PORT}`);
 
-    if (process.env.MODE != 'development') await start();
+    if (process.env.NODE_ENV != 'development') await start();
 
     cron.schedule('0 3 * * *', async () => {
         console.log("Running daily update...");

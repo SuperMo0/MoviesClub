@@ -87,32 +87,32 @@ export async function start() {
         }
 
         console.log(`Found ${movies.length} movies. Syncing DB...`);
-        for (let movie of movies) {
-            try {
-                await prisma.movie.upsert({
-                    where: { sourceId: movie.id },
-                    update: {
+        // for (let movie of movies) {
+        //     try {
+        //         await prisma.movie.upsert({
+        //             where: { sourceId: movie.id },
+        //             update: {
 
-                        image: movie.image,
-                        description: movie.description
-                    },
-                    create: {
-                        title: movie.title,
-                        sourceId: movie.id,
-                        image: movie.image,
-                        description: movie.description,
-                        genres: {
-                            connectOrCreate: movie.genre.map((g) => ({
-                                where: { name: g },
-                                create: { name: g },
-                            })),
-                        }
-                    }
-                });
-            } catch (error) {
-                console.log(`DB Error on ${movie.title}:`, error.message);
-            }
-        }
+        //                 image: movie.image,
+        //                 description: movie.description
+        //             },
+        //             create: {
+        //                 title: movie.title,
+        //                 sourceId: movie.id,
+        //                 image: movie.image,
+        //                 description: movie.description,
+        //                 genres: {
+        //                     connectOrCreate: movie.genre.map((g) => ({
+        //                         where: { name: g },
+        //                         create: { name: g },
+        //                     })),
+        //                 }
+        //             }
+        //         });
+        //     } catch (error) {
+        //         console.log(`DB Error on ${movie.title}:`, error.message);
+        //     }
+        // }
 
         await scrapeShowtimes(movies);
 
