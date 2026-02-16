@@ -49,6 +49,8 @@ if (process.env.NODE_ENV != 'development') {
 app.listen(PORT, async () => {
     console.log(`server running on port ${PORT}`);
 
+    console.log(process.env.NODE_ENV);
+
     if (process.env.NODE_ENV != 'development') await start();
 
     cron.schedule('0 3 * * *', async () => {

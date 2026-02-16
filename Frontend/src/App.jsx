@@ -24,7 +24,7 @@ function App() {
 
   const { check, isChecking, authUser } = useAuthStore()
   const { getPosts, getUsers, users, userPosts, isLoading, allPosts, likedPosts, getLikedPosts } = useSocialStore();
-  const { allMovies, getAllMovies, todayMovies, getTodayMovie } = useMoviesStore();
+  const { todayMovies, getTodayMovie } = useMoviesStore();
 
 
   useEffect(() => {
@@ -35,7 +35,6 @@ function App() {
 
     if (!users) getUsers();
     if (!userPosts) getPosts();
-    if (!allMovies) getAllMovies();
     if (!todayMovies) getTodayMovie();
 
     if (authUser && !likedPosts) {
@@ -48,7 +47,6 @@ function App() {
     isLoading ||
     !users ||
     !allPosts ||
-    !allMovies ||
     !todayMovies ||
     (authUser && !likedPosts);
 
