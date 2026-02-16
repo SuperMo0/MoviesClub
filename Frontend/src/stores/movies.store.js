@@ -7,19 +7,19 @@ export const useMoviesStore = create((set, get) => ({
 
     todayMovies: null,
 
-    // getAllMovies: async function () {
-    //     if (get().allMovies) return;
+    getAllMovies: async function () {
+        if (get().allMovies) return;
 
-    //     let allMovies = new Map();
-    //     let result = await api.get('/movies');
+        let allMovies = new Map();
+        let result = await api.get('/movies');
 
-    //     let movies = result.data.movies;
+        let movies = result.data.movies;
 
-    //     movies.forEach(m => {
-    //         allMovies.set(m.id, m);
-    //     })
-    //     set({ allMovies });
-    // },
+        movies.forEach(m => {
+            allMovies.set(m.id, m);
+        })
+        set({ allMovies });
+    },
 
     getTodayMovie: async function () {
         if (get().todayMovies) return;

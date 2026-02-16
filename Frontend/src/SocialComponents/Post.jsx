@@ -27,7 +27,7 @@ export default function Post({ user, post }) {
 
 
     const isLiked = (likedPosts?.has(post.id));
-    const movie = allMovies.get(post.movieId) || allMovies.get("2094918");
+    const movie = allMovies.get(post.movieId) || allMovies.get("2094918");  // this will break because we are not saving movies to the data base 
 
     async function handleLikePost() {
         if (!authUser) {
