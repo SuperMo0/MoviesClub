@@ -1,4 +1,3 @@
-import fs from 'fs'
 import { prisma } from './../lib/prisma.js'
 
 let cachedMovies = null;
@@ -13,12 +12,13 @@ export async function getTodayMovies(req, res, next) {
             return res.json({ movies: cachedMovies });
         }
 
-        if (!fs.existsSync('data.json')) {
+        const record = await prisma.app_state.findUnique({ where: { key: 'moviesData' } });
+
+        if (!record) {
             return res.status(503).json({ message: "Movies are being fetched, please try again later." });
         }
 
-        const rawData = fs.readFileSync('data.json', 'utf-8');
-        let parsedData = JSON.parse(rawData);
+        let parsedData = JSON.parse(record.value);
 
         cachedMovies = parsedData;
         lastUpdate = today;

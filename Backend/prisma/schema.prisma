@@ -69,3 +69,8 @@ model genre {
   name   String  @unique
   movies movie[] @relation("movie_genre")
 }
+
+model app_state {
+  key   String @id
+  value String
+}

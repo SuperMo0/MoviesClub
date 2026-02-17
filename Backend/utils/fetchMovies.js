@@ -1,5 +1,4 @@
 import * as cheerio from 'cheerio';
-import fs from 'fs';
 import axios from 'axios';
 import { prisma } from './../lib/prisma.js';
 
@@ -12,16 +11,15 @@ const HEADERS = {
 
 const base = 'https://elcinema.com';
 
-function shouldFetch() {
+async function shouldFetch() {
     try {
         const today = new Date().toLocaleDateString('en-CA');
 
-        if (!fs.existsSync('lastDataUpdate.json')) return true;
+        const record = await prisma.app_state.findUnique({ where: { key: 'lastDataUpdate' } });
 
-        let data = fs.readFileSync('lastDataUpdate.json', 'utf-8');
-        data = JSON.parse(data);
+        if (!record) return true;
 
-        if (data.date === today) {
+        if (record.value === today) {
             console.log('Movies are up to date.');
             return false;
         }
@@ -63,7 +61,7 @@ function getPages(page) {
 export async function start() {
     console.log('Starting Scraper');
 
-    if (!shouldFetch()) return;
+    if (!(await shouldFetch())) return;
 
     let movies = [];
     let today = new Date().toLocaleDateString('en-CA');
@@ -116,8 +114,18 @@ export async function start() {
 
         await scrapeShowtimes(movies);
 
-        fs.writeFileSync('data.json', JSON.stringify(movies));
-        fs.writeFileSync('lastDataUpdate.json', JSON.stringify({ date: today }));
+        // Store movie data in database instead of filesystem
+        await prisma.app_state.upsert({
+            where: { key: 'moviesData' },
+            update: { value: JSON.stringify(movies) },
+            create: { key: 'moviesData', value: JSON.stringify(movies) },
+        });
+
+        await prisma.app_state.upsert({
+            where: { key: 'lastDataUpdate' },
+            update: { value: today },
+            create: { key: 'lastDataUpdate', value: today },
+        });
 
         console.log('--- Scraper Finished Successfully ---');
 

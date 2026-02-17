@@ -8,6 +8,8 @@ import cookieParser from 'cookie-parser'
 import { start } from './utils/fetchMovies.js'
 import cron from 'node-cron';
 import path from 'path'
+import debug from 'debug'
+
 
 
 const app = express();
@@ -46,15 +48,17 @@ if (process.env.NODE_ENV != 'development') {
     })
 }
 
-app.listen(PORT, async () => {
-    console.log(`server running on port ${PORT}`);
+let cron_debug = debug("cron");
 
-    console.log(process.env.NODE_ENV);
+let server_debug = debug("server");
+
+app.listen(PORT, async () => {
+    server_debug('server running on port %o', PORT)
 
     if (process.env.NODE_ENV != 'development') await start();
 
-    cron.schedule('0 3 * * *', async () => {
-        console.log("Running daily update...");
+    cron.schedule('0 20 * * *', async () => {
+        cron_debug("Running daily updates")
         await start();
     });
 });
