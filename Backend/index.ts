@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import express from 'express'
+import type { Request, Response, NextFunction } from 'express'
 import authRouter from './Routes/auth.router.js'
 import socialRouter from './Routes/social.router.js'
 import moviesRouter from './Routes/movies.router.js'
@@ -54,7 +55,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/movies', moviesRouter);
 
 
-app.use((err, req, res, next) => {
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     return res.status(500).json({ message: err.message || "Internal Server Error" });
 })
 
@@ -76,7 +77,7 @@ if (process.env.NODE_ENV != 'development') {
 
     app.use(express.static(path.join(staticPath)));
 
-    app.get('/{*splat}', (req, res) => {
+    app.get('/{*splat}', (req: Request, res: Response) => {
         res.sendFile(path.join(staticPath, '/index.html'));
     })
 }

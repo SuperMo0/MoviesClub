@@ -5,12 +5,12 @@
   "license": "ISC",
   "author": "",
   "type": "module",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "start": "NODE_ENV=production node index.js",
+    "start": "NODE_ENV=production node index.ts",
     "mig": "npx prisma migrate dev --name Init",
     "gen": "npx prisma generate",
-    "dev": "NODE_ENV=development node --watch index.js",
+    "dev": "NODE_ENV=development node --watch index.ts",
     "seed": "node ./prisma/seed.js",
     "migrate": "npx prisma migrate deploy"
   },
@@ -37,8 +37,13 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@types/compression": "^1.8.1",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
+    "@types/debug": "^4.1.12",
     "@types/express": "^5.0.6",
     "@types/node": "^25.5.0",
+    "@types/node-cron": "^3.0.11",
     "typescript": "^5.9.3"
   }
 }
