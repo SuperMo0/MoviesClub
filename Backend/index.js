@@ -12,6 +12,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import debug from 'debug';
 import compression from 'compression'
+import helmet from 'helmet'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,6 +34,8 @@ const corsOptions = cors({
 const app = express();
 
 app.use(corsOptions);
+
+app.use(helmet());
 
 app.use(cookieParser());
 
@@ -59,6 +62,16 @@ const PORT = process.env.PORT || 3000;
 
 
 if (process.env.NODE_ENV != 'development') {
+    app.use(helmet.contentSecurityPolicy({
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", "data:", "res.cloudinary.com", "*.elcinema.com"],
+            connectSrc: ["'self'", process.env.FRONTEND_URL || 'http://localhost:5173']
+        },
+    }));
+
     const staticPath = path.join(__dirname, '..', 'Frontend/dist');
 
     app.use(express.static(path.join(staticPath)));
