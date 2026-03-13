@@ -43,7 +43,7 @@ app.use('/api/movies', moviesRouter);
 
 
 app.use((err, req, res, next) => {
-    return res.status(500).json({ message: err });
+    return res.status(500).json({ message: err.message || "Internal Server Error" });
 })
 
 const PORT = process.env.PORT || 3000;
