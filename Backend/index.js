@@ -11,7 +11,6 @@ import path from 'path'
 import debug from 'debug'
 
 
-
 const app = express();
 
 app.use(cors({
@@ -57,7 +56,7 @@ app.listen(PORT, async () => {
 
     if (process.env.NODE_ENV != 'development') await start();
 
-    cron.schedule('0 20 * * *', async () => {
+    cron.schedule('0 3 * * *', async () => {
         cron_debug("Running daily updates")
         await start();
     });
