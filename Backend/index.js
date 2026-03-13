@@ -8,8 +8,17 @@ import { rateLimit } from 'express-rate-limit'
 import cookieParser from 'cookie-parser'
 import { start } from './utils/fetchMovies.js'
 import cron from 'node-cron';
-import path from 'path'
-import debug from 'debug'
+import path from 'path';
+import { fileURLToPath } from 'url';
+import debug from 'debug';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+console.log(__filename);
+console.log(__dirname);
+
+
 
 const limiter = rateLimit({
     windowMs: 10 * 60 * 1000,
@@ -21,7 +30,7 @@ const limiter = rateLimit({
 })
 
 const corsOptions = cors({
-    origin: 'http://localhost:5173',
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
     credentials: true,
 })
 
@@ -49,9 +58,8 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3000;
 
 
-
 if (process.env.NODE_ENV != 'development') {
-    const staticPath = path.join(process.cwd(), '..', 'Frontend/dist');
+    const staticPath = path.join(__dirname, '..', 'Frontend/dist');
 
     app.use(express.static(path.join(staticPath)));
 
