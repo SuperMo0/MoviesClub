@@ -24,9 +24,12 @@
     "erasableSyntaxOnly": true,
     "verbatimModuleSyntax": true,
     "allowJs": true,
-    "noEmit": true,
+    "outDir": "./dist",
+    "noEmit": false
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "generated",
+    "dist"
   ]
 }
