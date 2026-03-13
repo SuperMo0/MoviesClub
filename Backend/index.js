@@ -11,14 +11,10 @@ import cron from 'node-cron';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import debug from 'debug';
+import compression from 'compression'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-console.log(__filename);
-console.log(__dirname);
-
-
 
 const limiter = rateLimit({
     windowMs: 10 * 60 * 1000,
@@ -36,9 +32,13 @@ const corsOptions = cors({
 
 const app = express();
 
-app.use(corsOptions)
+app.use(corsOptions);
 
 app.use(cookieParser());
+
+app.use(compression({
+    threshold: 1024
+}));
 
 app.use(express.json());
 
