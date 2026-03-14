@@ -9,11 +9,10 @@ import SocialProfile from './pages/SocialProfile'
 import Header from './MoviesComponents/Header'
 import Login from './SocialComponents/Login'
 import Signup from './SocialComponents/Signup'
+import SocialLayout from './SocialComponents/SocialLayout'
 
 // Stores
 import { useAuthStore } from './stores/auth.store'
-import { useSocialStore } from './stores/social.store'
-import { useMoviesStore } from './stores/movies.store'
 
 const LoginContext = createContext();
 
@@ -23,33 +22,12 @@ function App() {
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
 
   const { check, isChecking, authUser } = useAuthStore()
-  const { getPosts, getUsers, users, userPosts, isLoading, allPosts, likedPosts, getLikedPosts } = useSocialStore();
-  const { todayMovies, getTodayMovie, allMovies, getAllMovies } = useMoviesStore();
-
 
   useEffect(() => {
     check();
   }, []);
 
-  useEffect(() => {
-
-    if (!users) getUsers();
-    if (!userPosts) getPosts();
-    if (!todayMovies) getTodayMovie();
-    if (!allMovies) getAllMovies();
-
-    if (authUser && !likedPosts) {
-      getLikedPosts();
-    }
-  }, [authUser]);
-
-  const isDataNotReady =
-    isChecking ||
-    isLoading ||
-    !users ||
-    !allPosts ||
-    !todayMovies ||
-    (authUser && !likedPosts);
+  const isDataNotReady = isChecking;
 
   if (isDataNotReady) {
     return (
@@ -97,8 +75,10 @@ function App() {
         <Routes>
           <Route path='/' element={<Outlet />}>
             <Route index element={<Home />} />
-            <Route path='/social' element={<SocialMainPage />} />
-            <Route path='/social/user/:id' element={<SocialProfile />} />
+            <Route element={<SocialLayout />}>
+              <Route path='social' element={<SocialMainPage />} />
+              <Route path='social/user/:id' element={<SocialProfile />} />
+            </Route>
           </Route>
         </Routes>
 

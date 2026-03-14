@@ -141,10 +141,10 @@ export default function SocialProfile() {
     }
 
     const isOwner = authUser?.id === id;
-    const user = isOwner ? authUser : users.get(id);
-    const posts = userPosts.get(id) || [];
+    const user = isOwner ? authUser : users?.get(id);
+    const posts = userPosts?.get(id) || [];
 
-    if (!user) return <div className="text-white p-10 text-center">User not found</div>;
+    if (!user) return <div className="h-screen w-full flex items-center justify-center text-white bg-slate-950 text-center">User not found</div>;
 
     const stats = [
         { label: 'Reviews', value: posts.length },
