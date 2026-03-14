@@ -8,7 +8,7 @@ import {
     commentBodySchema,
     createPostBodySchema,
     updateProfileBodySchema
-} from '../../Shared/social.schema.js'
+} from '../../Shared/social.schema.ts'
 
 export async function getFeed(req: Request, res: Response, next: NextFunction) {
 
