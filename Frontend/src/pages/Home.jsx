@@ -6,17 +6,19 @@ import ShowingNow from '@/MoviesComponents/ShowingNow'
 import MovieBookingModal from '@/MoviesComponents/MovieBookingModal'
 import Login from '@/SocialComponents/Login'
 import { useMoviesStore } from '@/stores/movies.store'
+import LoadingScreen from '@/components/ui/LoadingScreen'
 
 export default function Home() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [activeMovie, setActiveMovie] = useState(null);
 
-    const { getTodayMovie, todayMovies } = useMoviesStore();
+    const { getTodayMovie, todayMovies, getAllMovies, allMovies } = useMoviesStore();
 
 
     useEffect(() => {
 
         getTodayMovie();
+        getAllMovies();
 
     }, [])
     function handleMovieClick(movie) {
@@ -28,16 +30,16 @@ export default function Home() {
         setIsModalOpen(false);
     }
 
-    if (!todayMovies) return 'loading...'
+    if (!todayMovies || !allMovies) return <LoadingScreen message="Loading Movies..." />;
 
     return (
-        <div className="relative min-h-screen bg-slate-950"> {/* Added basic background */}
+        <div className="relative min-h-screen bg-slate-950">
             <MovieBookingModal
                 isModalOpen={isModalOpen}
                 movie={activeMovie}
                 closeModal={closeModal}
             />
-            <Hero handleMovieClick={handleMovieClick} />  {/*This Component is heavy my fans are going crazy !*/}
+            <Hero handleMovieClick={handleMovieClick} />  {/*This component is heavy my fans are going crazy !*/}
             {/* <Qsearch /> */}
             <ShowingNow handleMovieClick={handleMovieClick} />
             <Footer />

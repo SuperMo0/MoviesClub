@@ -10,6 +10,7 @@ import Header from './MoviesComponents/Header'
 import Login from './SocialComponents/Login'
 import Signup from './SocialComponents/Signup'
 import SocialLayout from './SocialComponents/SocialLayout'
+import LoadingScreen from './components/ui/LoadingScreen'
 
 // Stores
 import { useAuthStore } from './stores/auth.store'
@@ -30,11 +31,7 @@ function App() {
   const isDataNotReady = isChecking;
 
   if (isDataNotReady) {
-    return (
-      <div className="h-screen w-full flex items-center justify-center bg-slate-950 text-white">
-        <div className="animate-pulse text-lg font-medium">Loading MovieClub...</div>
-      </div>
-    );
+    return <LoadingScreen message="Loading MovieClub..." />;
   }
 
   const openLogin = () => {
